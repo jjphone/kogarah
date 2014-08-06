@@ -1,0 +1,102 @@
+div.profile { 
+	margin-top: 1rem; margin-bottom: 20px; height: 2 * $cell-height !important;
+	@include cell-color(#ccc, #333, #999, transparent 50%, transparent 65%);
+	>div:not([class$="tag"]) { height: 100%;  }
+	>div.slide>div { height: 100% ;	}
+	>div:first-of-type {
+		>div.draw, >form {height:100%;}
+		//>form { @extend .red; }
+	}
+}
+
+h2.small-center { text-align:center; font-size:1.5em; line-height:110%;}
+
+div#user-info>div{
+	margin-bottom: 0.75rem; 
+	>div>em{ color: #888; font-size: 0.9rem;}
+	>div:first-child { font-weight: bold; }
+	>div.portrait {
+		text-align: center;
+		img { padding:3px; border: 1px solid #666; background: #eee;}
+	}
+	>div.username>h3 { margin: 0 ;} 
+}
+
+.fields>div { 
+	@extend .row;
+	margin-bottom: 10px;
+	>div {	padding: 5px;
+		>input { 	margin-bottom: 5px;}
+	}
+	>div:first-child{
+		@extend .columns; @extend .small-2; //@extend .lime;
+		>label 	{	@extend .inline; @extend .right; margin: 0; padding: 0;}
+	}
+	>div:nth-child(2){	
+		@extend .columns; @extend .small-8; //@extend .red; 
+		>input:not(#login).ng-invalid.ng-dirty {background-color: #FA787E;}
+	}
+
+
+	>div:nth-child(2)>input:not(#login).ng-invalid.ng-dirty {background-color: #f2dede;}
+	>div:nth-child(2)>input:not(#login).ng-valid.ng-dirty { background-color: #dff0d8;}
+
+	>span.ng-errors {	
+		@extend .alert-box.error; @extend .animated;
+		position: absolute; padding: 5px; z-index:10;
+		box-shadow: 1px 1px 5px 2px rgba(0,0,0,0.65);
+	}
+	>span.ng-errors.ng-enter  	{ @extend .fadeInDown; }
+	>span.ng-errors.ng-leave 	{ @extend .fadeOutUp; }
+}
+
+
+div.submit-buttons {
+	@extend .rows;
+	>div { @extend columns; @extend .small-12;
+			@extend .large-10; @extend .large-offset-2;
+			padding: 0 1em;
+			@include radius(5px);
+	}
+	>div>ul>li>button, >div>ul>li>input[type=submit] { @extend .button; @extend .radius; }
+	>div>ul>li>button[type=reset] { @extend .secondary;}
+}
+
+div.fields_errors>div {
+	margin-bottom:1em;
+	>h5 { text-transform:capitalize; color: red; margin-bottom: 5px;}
+	>ul {margin: 0; 
+		>li { margin: 0 0 0 5px; }
+	}
+}
+
+div.post, div.user>a {
+	padding:0; margin:0;
+	>div{ //@extend .yellow;
+		height: 260px;
+	}
+	>div>div:first-of-type {
+		@extend .row;
+		>div {@extend .columns;}
+		>div:first-child { 	
+			@extend .small-3;
+			>img { 
+				width: 40px; height:40px; 
+				border: 1px solid #666; border-radius: 50%;
+			}
+		}
+		>div:last-child { @extend .small-9; }
+	}
+	>div>div:not(:first-child) {
+		//@extend .red; 
+		margin-top:10px; font-size: 1.1rem;
+	}
+	>div>div.timestamp { //@extend .red;
+		font: 0.8rem/1rem Verdana, Geneva, sans-serif;
+		bottom: 1rem;
+		position:absolute;
+		>span { color: #777;}
+	}
+}
+div.users>div:hover { background: aqua; }
+

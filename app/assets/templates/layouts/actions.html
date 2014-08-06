@@ -1,0 +1,8 @@
+<div class="menu friend" ng-if="content.j.vs.view.data && content.j.vs.view.data.links && content.j.vs.view.data.links.level">
+	<h5>Actions</h5>
+	<div ng-repeat="(name, link) in content.j.vs.view.data.links.level">
+		<div><a ng-href="{{link}}"> {{ name | capitalize }}</a></div>
+	</div>
+	
+</div>
+

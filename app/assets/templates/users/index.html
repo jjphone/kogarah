@@ -1,0 +1,42 @@
+<div class="top-row" >
+
+	<div>
+		<div>
+			<form accept-charset="UTF-8" action="{{ users.user_path(current_user,'index') }}" method="get">
+				<h2 class="small-center">Search</h2>
+				<div class="hidden">
+					<input name="utf8" type="hidden" value="&#x2713;" />
+					<input name="_method" type="hidden" value="put" />
+					<input name="authenticity_token" type="hidden" value="content.j.vs.view.token" />
+				</div>
+
+				<ng-include class="fields" src="'/assets/users/search.html'"></ng-include>
+				
+				<hr class="submit">	
+				<div class="submit-buttons">
+					<div><ul class="small-block-grid-2">
+						<li><input name="commit" type="submit" value="Search" ng-click="users.console('index.html - input.Search')" /></li>
+						<li><button type="reset">Reset</button></li>
+					</ul></div>
+				</div>
+			</form>
+
+		</div>
+		<div></div> <!-- background-->
+	</div> <!-- end cell -->
+
+	<div>
+		<div ng-include src="'/assets/layouts/menu.html'"></div>
+
+		<div></div> <!-- background-->
+	</div> <!-- end cell -->
+
+</div>
+
+
+<div class="main last" ng-if="!(content.j.vs.view.data.paginate && content.j.vs.view.data.paginate.pack)" ng-include="'/assets/users/no_user.html'"> </div>
+
+<div class="main last users" ng-if="(content.j.vs.view.data.paginate && content.j.vs.view.data.paginate.pack)" id="page1" >
+	<div ng-repeat="user in content.j.vs.view.data.paginate.pack" ng-include="'/assets/users/user.html'"></div>
+	<span id="loading" ng-show="content.j.vs.view.data.paginate.page<content.j.vs.view.data.paginate.total" scrolling ><a>Loading more items</a></span>
+</div>

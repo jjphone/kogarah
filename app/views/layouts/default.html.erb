@@ -1,0 +1,20 @@
+<!--  app/views/layouts/default.html.erb -->
+<script id="viewService"><%= render "layouts/view_service.js" %></script>
+
+<div class="head-menu fixed" ng-include src="'/assets/layouts/topbar.html'" ></div>
+
+<!-- flash message -->
+<div id="flash" ng-show="content.j.vs.view.flash">
+	<div ng-repeat="(key,value) in content.j.vs.view.flash" class="alert-box {{key}}" >
+		<a class="close" ng-click="content.hideAlert(key)">&times</a>
+		<h5> {{key}} </h5>
+		<p> {{value}} </p>
+	</div>
+</div>
+
+<!-- <h1>Rails Request = <%=request.original_url%></h1> -->
+<ng-view></ng-view>
+
+
+
+

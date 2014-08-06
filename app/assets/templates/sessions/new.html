@@ -1,0 +1,41 @@
+<div class="top-row">
+	<div class="large-offset-3">
+	
+		<div> 
+			<form accept-charset="UTF-8" action="/sessions" method="post">
+				<h2 class="small-center">Login</h2>
+
+				<div class="hidden">
+					<input name="utf8" type="hidden" value="&#x2713;" />
+					<input name="authenticity_token" type="hidden" value="{{content.j.vs.token}}" />
+				</div>
+
+
+				<ng-include class="fields" src="'/assets/sessions/func/fields.html'"></ng-include>
+
+				<hr class="submit" />
+				<div class="submit-buttons">
+					<div><ul class="small-block-grid-2">
+						<li><input name="commit" type="submit" value="Login" /></li>
+						<li><button type="reset">Reset</button></li>
+					</ul></div>
+				</div>
+			</form>
+
+
+			<div class="draw" details="show"  title="more"><i></i></div>
+		</div>
+
+		<div class="slide">
+			<div>
+				<p>New visitor .. ?</p>
+				<p><a ng-href="/signup" class="button tiny">Sign up now!</a></p>
+			</div>
+			<div class="bg"></div>
+		</div>
+		
+		<!-- <div class="blue-tag"></div>  tag -->
+		<div></div> <!-- background -->	
+
+	</div>
+</div>

@@ -1,0 +1,19 @@
+
+<div class="menu" ng-if="content.paginated_total()>1">
+	<h5>Pagination</h5>
+
+	<div>{{content.j.vs.view.data.paginate.page}} / {{content.j.vs.view.data.paginate.total}} pages</div>
+
+	
+	<div>
+		<ul class="button-group radius even-2">
+			<li><a 	ng-click="content.paginate_page(content.j.vs.view.data.paginate.page-1)" 
+					ng-disabled="content.j.vs.view.data.paginate.page<2">prev</a></li>
+			<li><a 	ng-click="content.paginate_page(content.j.vs.view.data.paginate.page+1)"
+					ng-disabled="content.j.vs.view.data.paginate.page>=content.j.vs.view.data.paginate.total">next</a></li>
+		</ul>
+	</div>
+
+</div>
+
+

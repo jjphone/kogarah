@@ -1,0 +1,43 @@
+<li class="divider"></li>
+
+<li class="mail has-dropdown menu-item" title= "mail">
+	<a href={{content.MENU_LINKS.chats}}><i class="fi-mail blink"></i>Chats</a>
+	<ul class="dropdown right">
+		<li class="divider"></li>
+		<li><a href={{content.MENU_LINKS.chats}}>Compose</a></li>
+		<li class="divider"></li>
+		<li><a href={{content.MENU_LINKS.chats +"?folder=inbox"}}>Inbox</a></li>
+		<li><a href={{content.MENU_LINKS.chats +"?folder=sent"}}>Sent</a></li>
+		<li><a href={{content.MENU_LINKS.chats +"?folder=all"}}>All</a></li>
+	</ul>
+</li>
+
+<li class="divider"></li>
+<li class="friend has-dropdown menu-item" title= "friend">
+	<a href="#"><i class="fi-torsos-all blink"></i> Friend</a>
+	<ul class="dropdown right">
+		<li class="divider"></li>
+		<li><a href={{content.MENU_LINKS.relations+"?type=3"}}>Friends</a></li>
+		<li><a href={{content.MENU_LINKS.relations +"?type=2" }}>Approval</a></li>
+		<li><a href={{content.MENU_LINKS.relations +"?type=1" }}>Requested</a></li>
+		<li><a href={{content.MENU_LINKS.relations +"?type=-1" }}>Blocked</a></li>
+		<li class="divider"></li>
+		<li><a href="#">Suggested</a></li>
+		<li><a href="#">Search</a></li>
+	</ul>
+</li>
+
+<li class="divider"></li>
+<li class="login has-dropdown menu-item" title= "login" >
+	<a href={{content.current_user.url}}><i class="fi-widget"></i>{{content.current_user.name}}</a>
+	<ul class="dropdown right">
+		<li class="divider"></li>
+		<li><a href={{content.topbar.profile}}>Profile</a></li>
+		<li><a href={{content.topbar.setting}} >Setting</a></li>
+		<li><a>Invitation</a></li>
+		<li class="divider"></li>
+		<li><a href={{content.MENU_LINKS.signout}} class="signout" data-method="delete">Logout</a></li>
+	</ul>
+</li>
+
+<li class="divider"></li>

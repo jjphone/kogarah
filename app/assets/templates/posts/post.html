@@ -1,0 +1,33 @@
+<div class="post" id="paginate_{{post.id}}">
+	
+	<div>
+		<div>
+			<div><img ng-src="{{post.avatar_url}}" /></div>
+			<div><h6><a ng-href="/users/{{post.user_id}} ">{{post.name}}</a></h6></div>
+		</div>
+		<div> {{post.id}} </div>
+		<div> {{post.content}} </div>
+		<div> expire = {{post.expire}} </div>
+		<div> current_time = {{posts.current_time}} </div>
+
+		<div>posts.compareTime({{post.expire}},{{posts.current_time}}) = {{posts.compareTime(post.expire, posts.current_time) }} </div> 
+		<div ng-if="posts.compareTime(post.expire, posts.current_time)" >= true</div>
+		<div ng-if="posts.compareTime(posts.current_time, post.expire)" >= false</div>
+
+		
+		<div class="timestamp">Updated at <span>{{post.updated_at}}</span></div>
+		
+	</div>
+	<div class="draw" details="show" title="more" ng-if="posts.j.vs.view.current_user.id == post.user_id"><i></i></div>
+</div><!-- content -->
+
+<div class="slide" ng-if="posts.j.vs.view.current_user.id == post.user_id" >
+	<div><h5>Post Acions</h5>
+		<a>Edit</a>
+	</div>
+	<div class="bg"></div>
+</div>
+
+
+<!---  <div class="blue-tag"></div>  tag -->
+<div></div> <!-- background -->

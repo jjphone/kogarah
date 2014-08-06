@@ -1,0 +1,460 @@
+.yellow	{ border: 1px solid yellow; }
+.red	{ border: 1px solid red; }
+.blue	{ border: 1px solid blue; }
+.lime	{ border: 1px solid lime; }
+.green	{ border: 1px solid green; }
+.black	{ border: 1px solid black; }
+.aqua	{ border: 1px solid aqua; }
+
+@mixin glow-text-shadow($light-color, $dark-color) {
+	text-shadow:	
+		0 0 5px  $light-color,	0 0 10px $light-color, 0 0 15px $light-color, 
+		0 0 20px $dark-color, 	0 0 30px $dark-color,  0 0 40px $dark-color, 
+		0 0 50px $dark-color, 	0 0 75px $dark-color;
+}
+
+@mixin transparent-ratio($ratio) {
+	filter:		alpha(opacity=$ratio);	opacity:	$ratio/100 ;
+	-ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=$ratio)";
+}
+
+
+@mixin background-gradient($left, $lside, $rside, $right) {
+	background: -webkit-linear-gradient(90deg, $left, $lside, $rside, $right), -webkit-linear-gradient(0deg, $left, $lside, $rside, $right);
+	background: -o-linear-gradient(90deg, $left, $lside, $rside, $right), -o-linear-gradient(0deg, $left, $lside, $rside, $right);
+	background: -moz-linear-gradient(90deg, $left, $lside, $rside, $right), -moz-linear-gradient(0deg, $left, $lside, $rside, $right);
+	background: linear-gradient(90deg, $left, $lside, $rside, $right), linear-gradient(0deg, $left, $lside, $rside, $right);
+}
+
+@mixin cell-color($bgcolor, $txtcolor, $side-color, $left-ratio, $right-ratio) {
+	>div {	top: 0;	 }
+	>div:first-of-type {
+		@include background-gradient($side-color, $left-ratio, $right-ratio, $side-color);
+		width:100%;	border-radius: 0.3rem; 
+		color: $txtcolor; background-size: 100% 50%, 50% 100%;
+	}
+
+	>div:last-of-type	/* background colors and images */  {
+		left: 0px;	position:absolute; width:100%;
+		-webkit-animation: composite 5s infinite alternate;
+		z-index: -1; background: $bgcolor;
+	}
+}
+
+@mixin menu-effect ($link, $hover, $shadow) {
+	a, a>i 		{	color: $link !important; }
+	a:hover, a:hover>i, a:active, a:active>i { color: $hover; @include glow-text-shadow($shadow, $hover)  } 
+}
+
+@mixin arrow-to($dir) {
+	@if $dir == left {
+		i:before { content: "\f10a"; }
+	} @else {
+		i:before { content: "\f10b"; }
+	}
+}
+
+@mixin fade-effect($effect){
+	@if $effect == inLeft {
+		-webkit-animation-name: fadeInLeft;
+		-moz-animation-name: fadeInLeft;
+		-o-animation-name: fadeInLeft;
+		animation-name: fadeInLeft;
+
+	} @else if $effect == inRight {
+		-webkit-animation-name: fadeInRight;
+		-moz-animation-name: fadeInRight;
+		-o-animation-name: fadeInRight;
+		animation-name: fadeInRight;
+
+	} @else if $effect == outLeft {
+		-webkit-animation-name: fadeOutLeft;
+		-moz-animation-name: fadeOutLeft;
+		-o-animation-name: fadeOutLeft;
+		animation-name: fadeOutLeft;
+
+	} @else if $effect == outRight {
+		-webkit-animation-name: fadeOutRight;
+		-moz-animation-name: fadeOutRight;
+		-o-animation-name: fadeOutRight;
+		animation-name: fadeOutRight;
+	}
+}
+
+/* --- mixin above --- */
+
+/* definition */
+$set1-prime: 	#007fff;
+$set1-light-B: 	#aad6ff;	$set1-light-N:	#aad6ff;
+$set1-dark-B:	#003366;	$set1-dark-N:	#003366;
+
+$set2-prime: 	#ffa000;
+$set2-light-B: 	#ffbb00;	$set2-light-N:	#ffbb00;
+$set2-dark-B:	#b27f00;	$set2-dark-N:	#b27f00;
+
+$cell-height: 	300px;		$cell-border: 	#eee;
+$footer-height:	50px;
+
+
+/* menu color */
+$home-color:	#f00;		$home-color-h:	#e30;
+$mail-color:	#03f;		$mail-color-h: 	#00f;
+$friend-color:	#3c3;  		$friend-color-h: lime;
+$login-color:	#c3f;		$login-color-h:	#c0c;
+
+/* general */
+.grids>div {	
+	@extend .row;
+	>div:first-child	{	@extend .columns; @extend .small-3;}
+	>div:last-child		{	@extend .columns; @extend .small-9;}
+}
+
+.hidden {	margin:0; padding:0; display:none; }
+
+body {	padding-top: 45px; padding-bottom:50px; background: #eee; }
+
+%masonry  { @extend yellow;
+ 	@extend .row; 
+	background: #fffaf0; color: #888; 
+	padding: 0 1rem; 
+
+	>div { //@extend red;
+		@extend .columns; @extend .large-3; @extend .small-6;
+		@include cell-color(#fff, #333, #ccc, transparent 50%, transparent 65% );
+		position: relative; padding:0; 
+		border-top: 1px outset $cell-border; border-left: 1px solid $cell-border;
+	}
+	>div>div.slide, >div>div.slide>div { position: absolute; width:100%;}
+
+	>div>div.slide {
+		@extend .animated;
+		display: none; z-index: 1;
+		color: #eee; padding: 0; border-top: 1px solid #555;	border-bottom: 1px solid #555;
+		>div { float:left; top:0; height:100%; }
+		>div:first-child { z-index:2; padding: 1rem 1.2rem; }	
+		>div.bg { background: #313186; opacity: 0.85; }	
+	}
+
+	>div>div.slide.show, >div>div.slide.ng-animate { display: block; }
+
+	>div>div>div.draw{
+		position: absolute; top:0; width:20px; height: $cell-height;
+		background: #666; text-align:center; cursor:pointer;
+		box-shadow: inset 0 2px 0 rgba(255, 255, 255, 0.2), 0 1px 2px rgba(0, 0, 0, 0.05);
+		>i { color: #ccc; width: 100%;}
+		>i:before {
+			font-family: "foundation-icons"; font-style: normal;	font-weight: normal; font-variant: normal; text-transform: none;
+			line-height: 1;	-webkit-font-smoothing: antialiased; display: inline-block;	text-decoration: inherit;
+		}
+	}
+
+	>div>div>div.draw:hover, >div.more>div>div.draw {	
+		 background: #333;
+		>i { color: #f0f0f0; @include glow-text-shadow(#eee, #888);	}	
+	}
+
+	>div>div[class$="tag"] { top:0; right:0; width: 0;  height: 0;  position: absolute; border: 20px solid; }
+	>div>div.orange-tag	{	border-color: #ff9200 #ff9200 transparent transparent; }
+	>div>div.blue-tag	{	border-color: #1b1bb1 #1b1bb1 transparent transparent; }
+	>div>div.green-tag	{	border-color: #00af64 #00af64 transparent transparent; }
+}
+
+
+.main { 
+	@extend %masonry; 
+	>div, >div>div:first-of-type, >div>div:last-of-type,
+	>div>div.slide, >div>div.slide>div{
+		height: $cell-height;
+	}
+	>div>div>div.draw>i{ line-height: $cell-height; }
+}
+.main:last-child>div {	border-bottom: 1px solid $cell-border;}
+
+
+.top-row {
+	@extend %masonry;
+	>div {	
+		@extend .large-6; @extend .small-12; 
+		@include cell-color (#eff, #333, #999, transparent 65%, transparent 70% );		
+	}
+	>div>div.slide { width: 50%;  }
+
+	>div, >div>div:first-of-type, >div>div:last-of-type,
+	>div>div.slide, >div>div.slide>div{
+		height: $cell-height;
+		//height: 100%;
+	}
+	>div>div>div.draw>i{ line-height: $cell-height; }
+}
+
+
+/* small screen - small to medium */
+//@media only screen and (max-width:767px ) {
+//@media only screen and ( max-width:#{upper-bound($medium-range)} ) {
+@media #{$screen} and (max-width: #{upper-bound($medium-range)}) {
+	//.main:last-child>div:nth-last-of-type(2), .main:last-child>div:last-of-type { margin-bottom: 2em; }
+	
+	.main>div.small-6:nth-child(2n+1) {
+		background: blue;
+		>div>div.slide.ng-animate, >div.slide.show, >div.slide.show-remove {
+			margin-left: 100%; border-left: 1px solid #888; border-right: 3px solid #555;
+		}
+		>div>div.draw 	{	right: 0; }
+		>div.slide.ng-animate.show-add, >div.slide.show.ng-enter { @include fade-effect(inLeft); }
+		>div.slide.ng-animate.show-remove, >div.slide.show.ng-leave	{ @include fade-effect(outLeft); }
+	}
+	.main>div:not(.more).small-6:nth-child(2n+1){	>div>div.draw {	@include arrow-to(right) }	}
+	.main>div.more.small-6:nth-child(2n+1)		{	>div>div.draw {	@include arrow-to(left) }	}
+
+	.main>div.small-6:nth-child(2n) {
+		background: aqua;
+
+		>div>div.slide.ng-animate, >div.slide.show, >div.slide.show-remove {
+			margin-left: -100%; border-right: 1px solid #888; border-left: 3px solid #555;
+		}
+		>div>div.draw 	{	left: 0; }
+		>div.slide.ng-animate.show-add, >div.slide.show.ng-enter { @include fade-effect(inRight); }
+		>div.slide.ng-animate.show-remove, >div.slide.show.ng-leave	{ @include fade-effect(outRight); }
+	}
+	.main>div:not(.more).small-6:nth-child(2n)	{	>div>div.draw {	@include arrow-to(left) }	}
+	.main>div.more.small-6:nth-child(2n)		{	>div>div.draw {	@include arrow-to(right) }	}
+
+
+	.top-row>div.small-12 {
+		background: yellow;
+		>div>div.slide.ng-animate, >div.slide.show, >div.slide.show-remove {
+			margin-left: 0 ; border-left: 1px solid #888; border-right: 3px solid #555;
+		}
+		>div>div.draw 	{	right: 0; }
+		>div.slide.ng-animate.show-add, >div.slide.show.ng-enter { @include fade-effect(inLeft); }
+		>div.slide.ng-animate.show-remove, >div.slide.show.ng-leave	{ @include fade-effect(outLeft); }
+	}
+	.top-row>div:not(.more).small-12 {	>div>div.draw {	@include arrow-to(right) }	}
+	.top-row>div.more.small-12		 {	>div>div.draw {	@include arrow-to(left) }	}
+
+	.main>div.small-6:nth-child(2n+1)>div:first-of-type, .top-row>div.small-12>div:first-of-type { padding: 10px 25px 10px 10px;}
+	.main>div.small-6:nth-child(2n)>div:first-of-type {	padding: 10px 10px 10px 25px;}
+
+
+	/*messages listing*/
+	div#messages-list>div{
+		>div:nth-child(2){ 
+			text-align:center; display:block;
+			>div:nth-child(1) { 
+				border:7px solid; border-color: transparent transparent #111 transparent;
+				display:inline-block;
+			}
+		}
+		>div:nth-child(3) { padding-top:50px; text-align:right;}
+	}
+}
+
+/* large screeen -  $medium-up */
+//@media #{$screen} and (min-width:#{lower-bound($medium-range)}) {
+@media #{$large-up} {
+	//.main:last-child>div { margin-bottom: 2em; }
+	.main>div.small-6:not(:nth-child(4n)) {
+		background: Aquamarine;
+		>div>div.slide.ng-animate, >div.slide.show, >div.slide.show-remove {
+			margin-left: 100%; border-left: 1px solid #888; border-right: 3px solid #555;
+		}
+		>div>div.draw 	{	right: 0; }
+		>div.slide.ng-animate.show-add, >div.slide.show.ng-enter { @include fade-effect(inLeft); }
+		>div.slide.ng-animate.show-remove, >div.slide.show.ng-leave	{ @include fade-effect(outLeft); }
+	}
+	.main>div:not(.more).small-6:not(:nth-child(4n))	{	>div>div.draw {	@include arrow-to(right) }	}
+	.main>div.more.small-6:not(:nth-child(4n))		{	>div>div.draw {	@include arrow-to(left)  }	}
+
+	.main>div.small-6:nth-child(4n) { @extend .red;
+		background: blue;
+		//>div:first-child { @extend .red;}
+		>div>div.slide.ng-animate, >div.slide.show, >div.slide.show-remove {
+			margin-left: -100%; border-right: 1px solid #888; border-left: 3px solid #555;
+		}
+		>div>div.draw 	{ left: 0; }
+		>div.slide.ng-animate.show-add, >div.slide.show.ng-enter { @include fade-effect(inRight); }
+		>div.slide.ng-animate.show-remove, >div.slide.show.ng-leave	{ @include fade-effect(outRight); }
+	}
+	.main>div:not(.more).small-6:nth-child(4n)	{	>div>div.draw {	@include arrow-to(left)  }	}
+	.main>div.more.small-6:nth-child(4n)			{	>div>div.draw {	@include arrow-to(right) }	}	
+
+
+	.top-row>div.large-6:nth-child(2n+1) {
+		background: green;
+		>div>div.slide.ng-animate, >div.slide.show, >div.slide.show-remove { 
+			margin-left: 100% !important;
+		}
+		>div>div.draw 	{	right: 0; }
+		>div.slide.ng-animate.show-add, >div.slide.show.ng-enter { @include fade-effect(inLeft); }
+		>div.slide.ng-animate.show-remove, >div.slide.show.ng-leave	{ @include fade-effect(outLeft); }
+	}
+
+	.top-row>div.large-6:nth-child(2n) {
+		background: red;
+		>div>div.slide.ng-animate, >div.slide.show, >div.slide.show-remove { margin-left: -50% !important; }
+		>div>div.draw { left: 0; }
+		>div.slide.ng-animate.show-add, >div.slide.show.ng-enter { @include fade-effect(inRight); }
+		>div.slide.ng-animate.show-remove, >div.slide.show.ng-leave	{ @include fade-effect(outRight); }
+	}
+
+	.top-row>div:not(.more).large-6:nth-child(2n+1), .top-row>div.more.large-6:nth-child(2n) {	>div>div.draw {	@include arrow-to(right) }	}
+	.top-row>div:not(.more).large-6:nth-child(2n), .top-row>div.more.large-6:nth-child(2n+1) {	>div>div.draw {	@include arrow-to(left)  }	}
+
+	.main>div.small-6:not(:nth-child(4n))>div:first-of-type, .top-row>div.large-6:nth-child(2n+1)>div:first-of-type {padding: 10px 23px 10px 10px;}
+	
+	.main>div.small-6:nth-child(4n)>div:first-of-type, .top-row>div.large-6:nth-child(2n)>div:first-of-type {padding: 10px 10px 10px 23px;}
+
+	/*messages listing*/
+	div#messages-list>div>div:nth-child(2) {
+		>div {display:inline-block;}
+		>div:nth-child(1) { position: absolute;}
+	}
+
+	div#messages-list>div:not(.own)>div:nth-child(2)>div:nth-child(1) {
+		border:7px solid; border-color: transparent #111 transparent transparent;
+		top:11px; left:-8px; 
+	}
+
+	div#messages-list>div.own>div:nth-child(2)>div:nth-child(1) {
+		border:7px solid; border-color: transparent transparent transparent #111;
+		top:11px; right:-8px; 
+	}
+
+	div#messages-list>div:not(.own)>div:nth-child(3){text-align: right; padding-top:40px;}
+
+	div#messages-list>div.own {
+		>div:nth-child(1) { @extend .push-11; }
+		>div:nth-child(2) { @extend .push-1; direction:rtl; }
+		>div:nth-child(3) { @extend .pull-9; padding-top:40px;}
+	}
+}
+
+
+/* top-menu*/
+div.head-menu	 {	border-bottom: 3px solid blue;}
+div#page-content {	padding: 0 1rem; }
+
+div#page-content>div.row:first-child>div.columns{ padding-top: 1em; }
+
+nav.top-bar {
+	@include transparent-ratio(85);
+	box-shadow: 0 0 6px 3px #000;
+	sup#ver {
+		vertical-align: super; font-style:italic; font-size:0.7rem; color:red;
+	}
+
+	li.menu-item	{
+		@extend .animated;
+		>a>i	{
+			@extend .animated;
+			font-size:1.1rem; vertical-align:bottom; text-shadow:0 2px 3px rgba(255,255,255,0.25);
+			padding: 0 10px; color: rgba(230,230,184, 0.8);
+		}
+		>ul					{	min-width: 5rem; }
+		>ul.dropdown>li>a 	{	font-weight: bold;}
+	}
+	li#signin a 		{ color: #CC99ff; }
+	li#signin>a:hover 	{ @include glow-text-shadow(#fff, #ff9900);}
+}
+
+
+.home 	{ @include menu-effect($home-color-h, $home-color, white);  }
+.mail 	{ @include menu-effect($mail-color-h, $mail-color, white); }
+.friend { @include menu-effect($friend-color-h, $friend-color, #ccc); }
+.login 	{ @include menu-effect($login-color-h, $login-color, white); }
+
+
+/* flash */
+div#flash {
+	@extend .row; margin: 0; padding: 0; height: 0; // reduce the gap between topmenu and content
+	display:block;	z-index:9!important; position: fixed; top:60px; right:5%;
+	>div {		box-shadow: 1px 1px 5px 2px rgba(0,0,0,0.65); 	
+		h5		{	text-transform:capitalize; }
+	}
+	>div.alert-box{
+		@extend .columns;
+		@extend .large-4; @extend .large-offset-8;
+		@extend .small-5; @extend .small-offset-6;
+		@include radius(5px);
+		@extend .animated;
+		>a.close { top: 0.6em; right: 0.3em; }
+	}
+}
+
+
+div#flash>div.alert-box.ng-enter { @extend .fadeInDown; }
+
+div#flash>div.alert-box:not(.ng-leave)		{ @extend .fadeInDown; }
+div#flash>div.alert-box.ng-leave 			{ @extend .fadeOutUp; }
+.alert-box.error	{ color: #b94a48; background: #f2dede;	border-color: #eed3d7; }
+.alert-box.success	{ color: #468847; background: #dff0d8;	border-color: #d6e9c6; }
+.alert-box.info 	{ color: #3a87ad; background: #d9edf7;	border-color: #bce8f1; }
+
+
+a.x { 	
+	position:absolute; z-index: 5;
+	margin:0; padding:1px 3px; top:10px; right:30px; 
+	color:#666;
+	&:hover { background:#2ba6cb; color:#111; border:1px outset #aaa;}
+ }
+
+.full-width { @extend .row; >div{ @extend .small-12; @extend .columns;} }
+
+div.suppl { bottom:5px; position:absolute; bottom:15px; left:5%; width:90%}
+
+.menu-hover {	@include transparent-ratio(85); box-shadow: 0 0 6px 3px #999; 	background: #aaa; }
+.dark-bg {background: #333; }
+
+ul.menu-options{
+	margin: 5px;
+	
+	>li { //@extend .red; 
+		padding: 5px 0 10px;
+		>div.menu{ //@extend .blue;
+			padding: 2px 0; height: 260px;
+			&:hover { @extend .menu-hover; }
+		}
+		>div.menu>div { //@extend .aqua;
+			padding: 5px;
+			display: block;
+			&:hover { @extend .dark-bg;}
+			>div>a { font-size: 1rem; display:block; }
+		}
+		>div>h5 {font-size: 1.3rem; color:#111; }
+	}
+	>li.paginate>div.menu{ //@extend .blue;
+		&:hover { color: #eee; }
+		>div>input {
+			height: 1.5rem;
+			display: inline;
+			width:2rem;
+			margin: 5px 0 10px;
+			padding: 2px 0;
+		}
+		a { @extend .button; @extend .tiny; }
+		>div>a { 
+			@extend .secondary;
+			margin-left: 10px;
+		}
+		>div>ul.button-group {
+			margin-top: 30px;
+			>li>a {	@extend .success; }	
+		}
+	}
+}
+
+div.last { padding-bottom: 50px;}
+
+#loading { //@extend .red;
+	@extend .columns; @extend .small-12;
+	margin:0; padding: 1em; height: $footer-height;
+	background: #555; text-align: center; 
+	box-shadow: inset 0 2px 0 rgba(255, 255, 255, 0.2), 0 1px 2px rgba(0, 0, 0, 0.05);
+	@include transparent-ratio(85);
+	a { color: $home-color-h; }
+	&:hover{ 
+		background:#272727; 
+		@include glow-text-shadow( white, $home-color);
+		a { color: $home-color;  }
+	}
+}

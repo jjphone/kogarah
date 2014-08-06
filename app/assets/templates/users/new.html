@@ -1,0 +1,37 @@
+<div class="top-row" >
+
+	<div class="profile large-offset-3">
+
+		<div> 
+			<form accept-charset="UTF-8" action="{{users.user_paths(users.data.main.pack.id, 'create')}}" encrype="multipart/form-data" method="post" data-remote="true" name="profile" ng-submit="users.submitForm(profile,$event)">
+				<h2 class="small-center">New User</h2>
+
+				<div class="hidden">
+					<input name="utf8" type="hidden" value="&#x2713;" />
+					<input name="_method" type="hidden" value="post" />
+					<input name="authenticity_token" type="hidden" value="{{content.j.vs.token}}" />
+				</div>
+
+				<ng-include class="fields" src="'/assets/users/fields.html'"></ng-include>
+
+				<hr class="submit" />
+				<div class="submit-buttons">
+					<div><ul class="small-block-grid-2">
+						<li><input name="commit" type="submit" value="Create" ng-click="users.submitForm(profile,$event)" /></li>
+						<li><button type="reset">Reset</button></li>
+					</ul></div>
+				</div>
+			</form>
+			<div class="draw" details="show" ng-if="users.j.vs.view.data.main.pack.extra" title="more"><i></i></div>
+		</div>
+
+		<div class="slide" ng-if="users.j.vs.view.data.main.pack.extra">
+			<div ng-include src="'/assets/users/fields_errors.html'" ></div>
+			<div class="bg"></div>
+		</div>
+		
+		<!-- <div class="blue-tag"></div>  tag -->
+		<div></div> <!-- background -->	
+	</div> <!-- end cell -->
+
+</div>

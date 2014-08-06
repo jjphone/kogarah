@@ -1,0 +1,28 @@
+<nav class="top-bar" data-topbar>
+	<ul class="title-area">
+		<li class="name">
+			<h1><a href= {{content.j.vs.links.root}} >Trainbuddy<sup id="ver">alpha</sup></a>
+		</li>
+		<li class="toggle-topbar menu-icon"><a href="#"><span>Menu</span></a></li>
+	</ul>
+
+	<section class="top-bar-section">
+		<ul class="left">
+			<li class="divider"></li>
+			<li class="home has-dropdown menu-item" title= "home">
+				<a href= {{content.j.vs.links.root}} ><i class="fi-home"></i> Home</a>
+				<ul class="dropdown right">
+					<li class="divider"></li>
+					<li><a href={{content.j.vs.links.about}} >About</a></li>
+					<li><a href={{content.j.vs.links.contact}} >Contact</a></li>
+					<li><a href={{content.j.vs.links.help}} >Help</a></li>
+				</ul>
+			</li>
+			<li class="divider"></li>			
+		</ul>
+
+		<ul class="right" ng-include="content.menu()"> </ul>
+	</section>
+
+
+</nav>

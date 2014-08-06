@@ -1,0 +1,58 @@
+
+
+
+<div>
+	<div><label for="name">Name</label></div>
+	<div><input id="name" name="user[name]" type="text" ng-model="users.data.main.pack.name" ng-minlength="6" ng-maxlength="50" /></div>
+
+	<span class="ng-errors" ng-if="users.formChecked && profile['user[name]'].$error.minlength">min 6 chars</span>
+	<span class="ng-errors" ng-if="users.formChecked && profile['user[name]'].$error.maxlength">min 50 chars</span>
+	
+</div>
+<div> {{}} </div>
+<div>
+	<div><label for="email">Email</label></div>
+	<div><input id="email" name="user[email]" type="text" ng-model="users.data.main.pack.email" ng-minlength="6" ng-maxlength="100" ng-pattern="/^[\w+\-.]+@[a-z\d\-.]+\.[a-z]+$/i" /></div>
+
+	<span class="ng-errors" ng-if="users.formChecked && profile['user[email]'].$error.minlength">min 6 chars</span>
+	<span class="ng-errors" ng-if="users.formChecked && profile['user[email]'].$error.maxlength">max 100 chars</span>
+	<span class="ng-errors" ng-if="users.formChecked && profile['user[email]'].$error.pattern">Invalid email pattern</span>
+
+</div>
+<div>
+	<div><label for="phone">Phone</label></div>
+	<div><input id="phone" name="user[phone]" type="text" ng-model="users.data.main.pack.phone" ng-minlength="6" ng-maxlength="20" ng-pattern="/^[+|-]*\d+$/" /> </div>
+
+	<span class="ng-errors" ng-if="users.formChecked && profile['user[phone]'].$error.minlength">min 6 chars</span>
+	<span class="ng-errors" ng-if="users.formChecked && profile['user[phone]'].$error.maxlength">max 100 chars</span>
+	<span class="ng-errors" ng-if="users.formChecked && profile['user[phone]'].$error.pattern">Invalid phone pattern</span>
+</div>
+
+<div>
+	<div><label for="login">Login</label></div>
+	<div><input id="login" name="user[login]" type="text" ng-model="users.data.main.pack.login" ng-minlength="6" ng-maxlength="50" ng-pattern="/^[a-z][a-z0-9]*(-){1}[a-z0-9]+$/"  /></div>
+
+	<span class="ng-errors" ng-if="users.formChecked && profile['user[login]'].$error.minlength">min 6 chars</span>
+	<span class="ng-errors" ng-if="users.formChecked && profile['user[login]'].$error.maxlength">max 50 chars</span>
+	<span class="ng-errors" ng-if="users.formChecked && profile['user[login]'].$error.pattern">Only allow a-z,0-9 and &#x27;-&#x27; once within the login</span>
+</div>
+<div>
+	<div><label for="avatar">Upload photo</label></div>
+	<div class="avatar_upload"><input id="avatar" name="user[avatar]" type="file" ng-model="users.data.main.pack.avatar" /></div>
+</div>
+<div>
+	<div><label for="password" >Password</label></div>
+	<div><input id="password" name="user[password]" type="password" ng-model="users.data.main.pack.password" ng-minlength="6" ng-maxlength="30" /></div>
+
+	<span class="ng-errors" ng-if="users.formChecked && profile['user[password]'].$error.minlength">min 6 chars</span>
+	<span class="ng-errors" ng-if="users.formChecked && profile['user[password]'].$error.maxlength">max 30 chars</span>
+</div>
+
+<div >
+	<div><label for="confirm">Retype password</label></div>
+	<div class="retype_pwd"><input id="confirm" name="user[password_confirmation]" type="password" ng-model="users.data.main.pack.confirm"  /></div>
+
+	<span class="ng-errors" ng-if="users.formChecked && profile['user[password_confirmation]'].$invalid">Need to match password</span>
+	
+</div>
+

@@ -1,0 +1,35 @@
+<div class="top-row" >
+
+	<div>
+		<div class="grids" id="user-info"  >
+			<div>
+				<div class="portrait"> <img ng-src="{{users.data.main.pack.avatar_url}}" /> </div>
+				<div class="username"><h3> {{users.data.main.pack.name}} </h3></div>
+			</div>
+			<hr/>
+			<div><div>Relation:</div><div id="relation-status">@relation[0]</div></div>
+			<div><div>Login:</div><div> {{users.data.main.pack.login}} </div></div>
+			<div><div>URL:</div><div><a ng-href="/users/{{users.data.main.pack.login}}">/users/{{users.data.main.pack.login}}</a></div></div>
+			<div><div>Email:</div><div> {{users.data.main.pack.email}} </div></div>
+			<div><div>Phone:</div><div> {{users.data.main.pack.phone}} </div></div>
+			<hr class="underline" />
+			<div><div>Post</div><div> Post Options</div></div>
+		</div>
+
+		<div></div> <!-- background-->
+	</div> <!-- end cell -->
+
+	<div>
+		<div ng-include src="'/assets/layouts/menu.html'"></div>
+		<div></div> <!-- background-->
+	</div> <!-- end cell -->
+
+</div>
+
+
+<div class="main last" ng-if="!(content.j.vs.view.data.paginate && content.j.vs.view.data.paginate.pack)" ng-include="'/assets/posts/no_post.html'"> </div>
+
+<div class="main last posts" ng-if="(content.j.vs.view.data.paginate && content.j.vs.view.data.paginate.pack)" ng-controller="postsCtrl as posts" >
+	<div ng-repeat="post in content.j.vs.view.data.paginate.pack" ng-include="'/assets/posts/post.html'"></div>
+	<span id="loading" ng-show="content.j.vs.view.data.paginate.page<content.j.vs.view.data.paginate.total" scrolling ><a>Loading more items</a></span>
+</div>
