@@ -22,11 +22,11 @@ class SessionsController < ApplicationController
 			else
 				@view = initView
 				@view.parse_user(current_user, nil, template_path("/users/show.html"), nil )
-
 			end
 
 			redirect_back_or current_user
-			@view = parseView( nil,  )
+#			@view = parseView( nil,  )
+
 		else
 			flashs = {error: "Invalid email/password combination"}
 			@view = parseView( flashs, session_page("new"), "Trainbuddy | Login", "/signin", nil)

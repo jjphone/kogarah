@@ -38,46 +38,37 @@ gem 'jbuilder', '~> 2.0'
 # gem 'active_model_serializers'
 # gem 'rabl'
 
-# bundle exec rake doc:rails generates the API under doc/api.
-gem 'sdoc', '~> 0.4.0',          group: :doc
+group :doc do 
+    # bundle exec rake doc:rails generates the API under doc/api.
+    gem 'sdoc'
+end
 
 # Spring speeds up development by keeping your application running in the background. Read more: https://github.com/rails/spring
 group :development do 
 	gem 'spring'
-	gem 'capistrano-rails'
+	
 	gem 'better_errors'
     gem 'binding_of_caller'
     gem 'meta_request'
 end
 
-group :test do 
-    gem 'selenium-webdriver'
-    gem 'capybara'
-    gem "libnotify"
 
-    gem "database_cleaner"
-    gem "launchy"
-
-end
 
 
 group :development, :test do 
-        gem "factory_girl_rails"
-        gem 'faker'
-        gem "rspec-rails"
-        gem "guard-rspec"
+    gem "factory_girl_rails"
+    gem 'capistrano-rails'
+    gem 'faker'
+    gem "rspec-rails", '~> 3.0.2'
+    gem 'capybara', '~> 2.4.1'
+#    gem "guard-rspec"
+    gem 'selenium-webdriver'
+    gem "libnotify"
+    gem "database_cleaner"
+    gem "launchy"
 
-        gem "spork-rails"
-        gem "guard-spork"
-        gem "childprocess"
+#    gem "spork-rails"
+#    gem "guard-spork"
+
 end
-
-
-
-# Use unicorn as the app server
-# gem 'unicorn'
-
-
-# Use debugger
-# gem 'debugger', group: [:development, :test]
 

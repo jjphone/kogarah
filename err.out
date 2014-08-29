@@ -1,0 +1,16 @@
+F
+
+Failures:
+
+  1) Pages GET /pages works! (now write some real specs)
+     Failure/Error: get pages_index_path
+     NameError:
+       undefined local variable or method `pages_index_path' for #<RSpec::ExampleGroups::Pages::GETPages:0xa358c5c>
+     # ./spec/requests/pages_spec.rb:6:in `block (3 levels) in <top (required)>'
+
+Finished in 0.00239 seconds (files took 2.56 seconds to load)
+1 example, 1 failure
+
+Failed examples:
+
+rspec ./spec/requests/pages_spec.rb:5 # Pages GET /pages works! (now write some real specs)

@@ -7,8 +7,10 @@ class ApplicationController < ActionController::Base
 
 
 	def parseView(flashs, page, title, url, data=nil)
-		params = { 	path: { prev: request.env["HTTP_REFERER"], current: url} , flash: flashs, 
-					current_user: current_user ? current_user.to_h : nil, 
+		http_path = { prev: request.env["HTTP_REFERER"], current: url }
+		user = current_user ? current_user.to_h : nil
+		params = { 	path: http_path, flash: flashs, 
+					current_user: user, 
 					template: page, title: title, data: data,  source: nil }
 		View.new(params)
 	end
