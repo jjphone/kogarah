@@ -1,9 +1,7 @@
 <div class="top-row">
 
 	<div>
-		<div><h1>About</h1>
-			#details=add# 
-			
+		<div><h1>About</h1>			
 			{{content.j.vs.view}}
 			
 			<div class="draw" details="add" title="more"><i></i></div> 
@@ -17,8 +15,19 @@
 	<div>
 		<div> #details=show#
 			<ul>
-				<li><a ng-href="/help">Ng-HREF link to  /help</a></li>
+				<li><a ng-href="/users">Ng-HREF /users</a></li>
 				<li><a href="/home">Normal Href link</a></li>
+				<li><a>Update User1 relation -> Block</a></li>
+
+				<li><a href="/relationships/2?o=2&amp;op=0&amp;ptype=21" data-method="put" data-remote="true" rel="nofollow" class="">un-Friend - put - remote</a></li>
+
+				<li><a href="/relationships/2?o=2&amp;op=0&amp;ptype=21" data-method="put"  rel="nofollow" class="">un-Friend - put</a></li>
+
+				<li><a href="/relationships/2?o=2&amp;op=0&amp;ptype=21"  rel="nofollow" class="">un-Friend - index</a></li>
+
+				<li><span ng-click="content.syncURL(this)" >Update URL</span></li>
+
+
 			</ul>
 			<div class="draw" details="show" title="more"><i></i></div>
 		</div>

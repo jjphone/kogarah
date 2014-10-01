@@ -14,9 +14,9 @@ Rails.application.routes.draw do
   get 'pages/contact'
   get 'contact',    to: "pages#contact"
 
-  match '/signin',  to: "sessions#new",      via: 'get'
-  match '/signout', to: "sessions#destroy",  via: 'get'
-  root              to: "pages#about"
+  match '/signin',  to: "sessions#new",       via: 'get'
+  match '/signout', to: "sessions#destroy",   via: "delete"
+  root              to: "pages#home"
 
   # The priority is based upon order of creation: first created -> highest priority.
   # See how all your routes lay out with "rake routes".

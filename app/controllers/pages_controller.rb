@@ -2,26 +2,30 @@ class PagesController < ApplicationController
 	
 
 	def about
-		flash = {error: "error-message", success: "success-message"}
-		@view = parseView(flash, "/assets/pages/about.html", "Trainbuddy | About", nil)
+		#flash = {error: "error-message", success: "success-message"}
+		flashs = nil
+		@view = parseView(flashs, "/assets/pages/about.html", "Trainbuddy | About", '/about', nil)
 		renderView
 	end
 
 	def home
-		flash = {error: "error-message", success: "success-message"}
-		@view = parseView(flash, "/assets/pages/home.html", "Trainbuddy | Home", nil)
+		#flashs = {error: "error-message", success: "success-message"}
+		flashs = nil
+		@view = parseView(flashs, "/assets/pages/home.html", "Trainbuddy | Home", '/', nil)
 		renderView
 	end
 
 	def help
-		flash = {error: "error-message", success: "success-message", info: "info-message"}
-		@view = parseView(flash, "/assets/pages/help.html", "Trainbuddy | help",nil)
+		#flashs = {error: "error-message", success: "success-message", info: "info-message"}
+		flashs = nil
+		@view = parseView(flashs, "/assets/pages/help.html", "Trainbuddy | help",'/about?sourece=PagesController&action=help', nil)
 		renderView
 	end
 
 	def contact
-		flash = {error: "error-message", success: "success-message"}
-		@view = parseView(flash, "/assets/pages/contact.html", "Trainbuddy | Contact", nil)
+		#flashs = {error: "error-message", success: "success-message"}
+		flashs = nil
+		@view = parseView(flashs, "/assets/pages/contact.html", "Trainbuddy | Contact", '/contact#page', nil)
 		renderView
 	end
 

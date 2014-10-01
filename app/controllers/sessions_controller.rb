@@ -2,10 +2,8 @@ class SessionsController < ApplicationController
 	def new 
 		Rails.logger.debug "----- Sessions#new"
 		flashs = flash.to_hash
-
-		Rails.logger.debug ("----- flash"+flash.inspect)
 		flash.clear
-		@view = parseView(flashs, session_page('new'), 'Trainbuddy | Login', nil, nil)
+		@view = parseView(flashs, html_page('new'), 'Trainbuddy | Login', signin_path, nil)
 		renderView
 	end
 
@@ -13,44 +11,29 @@ class SessionsController < ApplicationController
 		Rails.logger.debug "----- Sessions#create"
 		user = User.find_by(email: params[:session][:email].downcase)
 		if user && user.authenticate(params[:session][:password])
-
 			sign_in user
-			#flashs = {success: "user login"}
-			#@view = parseView( flashs, session_page("home"), "Trainbuddy | #{user.name}", "/home", nil)
-			if session[:return_to]
-				redirect_to session[:return_to]
-			else
-				@view = initView
-				@view.parse_user(current_user, nil, template_path("/users/show.html"), nil )
-			end
-
-			redirect_back_or current_user
-#			@view = parseView( nil,  )
-
+			redirect_back_or(current_user.to_slug, {info: "User login."} )
 		else
 			flashs = {error: "Invalid email/password combination"}
-			@view = parseView( flashs, session_page("new"), "Trainbuddy | Login", "/signin", nil)
-			renderView
+			@view = parseView( flashs, html_page("new"), "Trainbuddy | Login - Error", "/signin?login=error", nil)
+			renderViewWithURL(4, nil)
 		end
-		Rails.logger.debug @view.inspect
-		
+		# Rails.logger.debug @view.inspect
 	end
 
 	def destroy
 		Rails.logger.debug "----- Sessions#destroy"
 		sign_out
-		redirect_to root_url
-
+		redirect_format(root_url, {info: "User logout."}, params[:callback] )
 	end
 	
-	def session_page(page)
+	def html_page(page)
 		case page 
 		when 'new'
-			template_path "/sessions/new.html"
+			asset_path("/sessions/new.html")
 		when 'create'
 		when 'destroy'
-		when "home"
-			template_path "/pages/home.html"
+
 		end
 	end
 

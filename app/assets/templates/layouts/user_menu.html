@@ -17,8 +17,8 @@
 	<a href="#"><i class="fi-torsos-all blink"></i> Friend</a>
 	<ul class="dropdown right">
 		<li class="divider"></li>
-		<li><a href={{content.MENU_LINKS.relations+"?type=3"}}>Friends</a></li>
-		<li><a href={{content.MENU_LINKS.relations +"?type=2" }}>Approval</a></li>
+		<li><a ng-href={{content.MENU_LINKS.relations+"?type=3"}}>Friends</a></li>
+		<li><a ng-href={{content.MENU_LINKS.relations +"?type=2" }}>Approval</a></li>
 		<li><a href={{content.MENU_LINKS.relations +"?type=1" }}>Requested</a></li>
 		<li><a href={{content.MENU_LINKS.relations +"?type=-1" }}>Blocked</a></li>
 		<li class="divider"></li>
@@ -29,14 +29,14 @@
 
 <li class="divider"></li>
 <li class="login has-dropdown menu-item" title= "login" >
-	<a href={{content.current_user.url}}><i class="fi-widget"></i>{{content.current_user.name}}</a>
+	<a ng-href={{content.topbarLinks('user')}} ><i class="fi-widget"></i>{{content.j.vs.view.current_user.login}}</a>
 	<ul class="dropdown right">
 		<li class="divider"></li>
-		<li><a href={{content.topbar.profile}}>Profile</a></li>
-		<li><a href={{content.topbar.setting}} >Setting</a></li>
+		<li><a ng-href={{content.topbarLinks('profile')}} >Profile</a></li>
+		<li><a ng-href={{content.topbarLinks('setting')}} >Setting</a></li>
 		<li><a>Invitation</a></li>
 		<li class="divider"></li>
-		<li><a href={{content.MENU_LINKS.signout}} class="signout" data-method="delete">Logout</a></li>
+		<li><a href="/signout" class="signout" data-method="delete">Logout</a></li>
 	</ul>
 </li>
 

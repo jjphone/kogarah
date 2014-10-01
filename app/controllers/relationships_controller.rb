@@ -24,6 +24,7 @@ class RelationshipsController < ApplicationController
 		respond_to do |format|
 			format.json {
 				show_user( current_user.id, other_params )
+				renderView
 			}
 			format.html {
 				redirect_to @user

@@ -105,7 +105,8 @@ class User < ActiveRecord::Base
 	end
 
 	def to_slug
-		login ?	"/u/#{login}" : "/users/#{id}"
+		# login ?	"/u/#{login}" : "/users/#{id}"
+		"/users/#{id}"
 	end
 
 private
@@ -122,8 +123,5 @@ private
       	params.require(:person).permit(:name, :age, pets_attributes: [ :name, :category ])
     end
 =end
-
-
-
 
 end

@@ -17,23 +17,28 @@ class UsersController < ApplicationController
 	end
 
 	def show
-		Rails.logger.debug "----- users#show"
+		Rails.logger.debug "----- Users#show"
 		@user = User.find_by_id(params[:id] )
 		show_user( current_user.id, nil )
 	end
 
 	def edit
-		Rails.logger.debug "---- #edit"
-		@user = User.find_by_id(params[:id])
-		@view.parse_user(@user,"/edit", user_page("edit"), user_page("index"))
-		renderView
+		Rails.logger.debug "---- Users#Edit"
+		if @view 
+			# before_action error
+			renderViewWithURL(4, nil)
+		else
+			@view = parseView(nil,nil,nil,nil,nil)
+			@view.parse_user( @user, "/edit", user_page("edit"), user_page("index") )
+			renderView
+		end
 	end
 
 	def update
 		Rails.logger.debug "---- #update"
 		#@user = fetch_user
 		@user = User.find_by_id(params[:id])
-		@view = initView
+		@view = parseView(nil,nil,nil,nil,nil)
 		if @user
 			if @user.update(user_params("edit") )
 				@user.reload
@@ -46,7 +51,8 @@ class UsersController < ApplicationController
 		else
 			@view.parse_user(nil, nil, nil, user_page("index"))
 		end
-		renderView('update.js.erb')
+		#renderView('update.js.erb')
+		renderViewWithURL(4, "update.js.erb")
 	end
 
 	def new 
@@ -59,7 +65,7 @@ class UsersController < ApplicationController
 	def create
 		Rails.logger.debug "----   #create"
 		@user = User.new(user_params("create"))
-		@view = initView
+		@view = parseView(nil,nil,nil,nil,nil)
 		if @user.save
 			@user.reload
 			sign_in user
@@ -71,7 +77,8 @@ class UsersController < ApplicationController
 			@view.flash = {error: "user can't be created"}
 			@view.title = "Trainbuddy | New User"
 		end
-		renderView('update.js.erb')
+		#renderView('update.js.erb')
+		renderViewWithURL(4, "update.js.erb")
 	end
 
 	def destroy

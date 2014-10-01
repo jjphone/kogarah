@@ -21,12 +21,17 @@ app.config(["$routeProvider", '$locationProvider', ($routeProvider, $locationPro
 	$locationProvider.html5Mode(true)
 	$routeProvider.when("/help", { 
 		templateUrl:  "/assets/layouts/ngView.html",
+		reloadOnSearch: false,
 		resolve: { load: pageCtrl.loadView },
+		
 		controller: "pageCtrl",	controllerAs: "pages"
+		
 	}).when("/about", {
 		templateUrl:  "/assets/layouts/ngView.html",
+		reloadOnSearch: false,
 		controller: "pageCtrl",
 		controllerAs: "pages",
+
 		resolve: { load: pageCtrl.loadView },
 		
 	}).when("/home", {
@@ -132,7 +137,6 @@ app.factory("Jsonp", ["$route", "$location", "$http", "$q", "$cookies","ViewServ
 				params.callback = "JSON_CALLBACK" 
 			else 
 				params = {callback: "JSON_CALLBACK"}
-
 			conn = $http.jsonp(url, {params: params})
 
 			console.log("-----   Jsonp:fetch( url: " +url+ ", params : " +params+ ") ")
@@ -154,25 +158,6 @@ app.factory("Jsonp", ["$route", "$location", "$http", "$q", "$cookies","ViewServ
 				console.log data
 				q.reject()
 			)
-
-		, post: (q, url, data) ->
-			conn  = $http.post(url, data)
-			console.log "------- #. Jsonp.post : conn = "
-			console.log conn 
-
-			conn.success( (data, status, header, config) ->
-				console.log("------- #. Jsonp.post : success :: status = " + status)
-				console.log("------------   data =")
-				console.log data
-				q.resolve(data)
-
-			).error( (data, status, header, config) ->
-				console.log("------- #. Jsonp.post : Error ! :: status = " + status)
-				console.log("------------   data =")
-				console.log data
-				q.reject()
-			)
-
 			
 		, updatePage: (title, scope) ->
 			angular.element("title").html(title) if title?
@@ -195,7 +180,7 @@ app.factory("Jsonp", ["$route", "$location", "$http", "$q", "$cookies","ViewServ
 				)
 					
 				if window.viewPreload?
-					console.log "----- jsonp:loadView() :: load window.viewPreload"
+					console.log "----- jsonp:loadView() :: fetch window.viewPreload"
 					ViewService.set(window.viewPreload, $("meta[name=\"csrf-token\"]").attr("content") )
 					window.viewPreload = null
 					query.resolve("window.viewPreload")
@@ -214,20 +199,6 @@ app.factory("Jsonp", ["$route", "$location", "$http", "$q", "$cookies","ViewServ
 						query.reject("jsonp.fetch - NOK ! ")
 					)
 			return query
-
-		, postForm: (data) ->
-			console.log "------ jsonp:postForm"
-			url = "/sessions"
-			request = $q.defer()
-			this.post(request, url, data).then( (response) ->
-				console.log "------- jsonp : postForm :: OK ! ------ data = "
-				console.log response
-			, (response) -> 
-				console.log "------- jsonp : postForm :: OK ! ------ data = "
-				console.log response
-			)
-			
-			
 	}
 ])
 
@@ -417,24 +388,16 @@ usersCtrl.loadView = ["Jsonp",  (Jsonp) ->
 ]
 
 sessionsCtrl = app.controller("sessionsCtrl", ["Jsonp", (Jsonp) ->
-	sessions = this
-	sessions.j = Jsonp
-	sessions.data = {}
+	session = this
+	session.j = Jsonp
 	console.log "---- sessionsCtrl.init"
-	sessions.submitForm = (form, event) ->
+	session.submitForm = (form, event) ->
 		event.preventDefault()
-		console.log("-------- Session.submitForm() :: form = ")
-		
+		console.log("-------- Session.submitForm() ")
+		console.log form
+		console.log form.action
 
-		console.log sessions.data
-
-		sessions.j.postForm(sessions.data)
-
-		
-
-		#Jsonp.post()
-
-	sessions
+	session
 ])
 
 sessionsCtrl.loadView = ["Jsonp", (Jsonp) -> 

@@ -1,16 +1,15 @@
 
 class View
 	include ActiveModel::Model
-	attr_accessor :source, :site_url, :path, :flash, :current_user, :template, :data, :title
+	attr_accessor :source, :site_url, :path, :flash, :current_user, :template, :data, :title, :syn_url
 
 	def initialize(attributes = {} )
 		attributes.each do |name, value|
 			send("#{name}=",value)
 			p "#{name} = #{value}"
 		end
-		self.site_url = "http://kogarah.localhost/" unless self.site_url
-		self.title = "Trainbuddy" unless self.title
 	end
+
 
 	def related_links(relates)
 		if self.data

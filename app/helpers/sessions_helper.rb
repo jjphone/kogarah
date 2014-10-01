@@ -1,8 +1,9 @@
 module SessionsHelper
 	
 	def signed_in_user
-		unless signed_in?			
-			redirect_to signin_url, flash:{info:  "Required login."}
+		unless signed_in?
+			store_location request.url
+			redirect_format(signin_url, {info: "Required login"}, params[:callback] )
 		end
 	end
 
@@ -13,8 +14,12 @@ module SessionsHelper
     	self.current_user = user
 	end
 
+
+
+
 	def sign_out 
-		current_user.update(:remember_token, User.digest(User.new_remember_token) )
+		#update_attribute bypass password validation
+		current_user.update_attribute(:remember_token, User.digest(User.new_remember_token) )
 		cookies.delete(:remember_token)
 		self.current_user = nil
 	end
@@ -37,28 +42,31 @@ module SessionsHelper
 		@current_user
 	end
 
-	def redirect_back_or(default)
-		redirect_to(session[:return_to] || default )
-		session.delete(:return_to)
-	end
-
 	def store_location(link = nil)
-		if link 
+		if link
 			session[:return_to] = link 
 		else
 			session[:return_to] = request.url if request.get?
 		end
+		Rails.logger.debug "------  SessionsHelper#store_location :: session[:return_to] =  #{session[:return_to]}"
 	end
 
+
+	# returns:
+	# => nil if authentiated
+	# => @view with new URL if error
 	def auth_user
 		@user = User.find_by(id: params[:id] )
 		if @user
-			unless current_user? @user
-				redirect_to @user, flash: {error: "Invalid operation - insufficient priviledge"}
+			if current_user? @user 
+				@view = nil
+			else
+				flash = { error: "Invalid operation - Insufficient priviledge on User @#{@user.login}" }
+				@view = show_user(current_user.id, nil)
 			end
-			#redirect_to @user, flash: {error: "Invalid operation - insufficient priviledge"} unless current_user? @user
 		else
-			redirect_to root_path, flash: {error: "Invalid user id : #{params[:id]}"}
+			flashs = { error: "Invalid user id : #{params[:id].to_i}" }
+			@view = parseView(flashs, "/assets/pages/home.html", "Trainbuddy | Home", '/', nil)
 		end
 	end
 

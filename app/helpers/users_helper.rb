@@ -3,13 +3,13 @@ module UsersHelper
 	def user_page(page)
 		case page 
 		when 'new'
-			template_path "/users/new.html"
+			asset_path("/users/new.html")
 		when 'show'
-			template_path "/users/show.html"
+			asset_path("/users/show.html")
 		when 'edit'
-			template_path "/users/edit.html"
+			asset_path("/users/edit.html")
 		else
-			template_path "/users/index.html"
+			asset_path("/users/index.html")
 		end
 	end
 
@@ -39,9 +39,7 @@ module UsersHelper
 	end
 
 	def show_user(owner_id, param_str)
-		#@user = User.find_by_id(shower_id)
-		
-		@view = initView
+		@view = parseView(nil,nil,nil,nil,nil)
 		if @view.parse_user( @user, param_str , user_page("show"), user_page("index") )
 			gen_links( associate_actions(owner_id, @user.id) )
 			posts = @user.posts.paginate(page: params[:page])
@@ -50,7 +48,7 @@ module UsersHelper
 		end
 		@view.flash = flash.to_hash
 		flash.clear
-		renderView
+		return @view
 	end
 
 end
