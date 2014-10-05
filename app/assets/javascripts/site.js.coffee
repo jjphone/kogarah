@@ -21,57 +21,48 @@ app.config(["$routeProvider", '$locationProvider', ($routeProvider, $locationPro
 	$locationProvider.html5Mode(true)
 	$routeProvider.when("/help", { 
 		templateUrl:  "/assets/layouts/ngView.html",
-		resolve: { load: pageCtrl.loadView },
+		resolve: {load: loadView},
 		controller: "pageCtrl",	controllerAs: "pages"
 	}).when("/about", {
 		templateUrl:  "/assets/layouts/ngView.html",
-		controller: "pageCtrl",
-		controllerAs: "pages",
-		resolve: { load: pageCtrl.loadView },
-		
+		resolve: {load: loadView},
+		controller: "pageCtrl",	controllerAs: "pages"
 	}).when("/home", {
 		templateUrl:  "/assets/layouts/ngView.html",
-		controller: "pageCtrl",
-		controllerAs: "pages",
-		resolve: { load: pageCtrl.loadView },
-	}).when("/pages", {
+		resolve: {load: loadView},
+		controller: "pageCtrl",	controllerAs: "pages"
+	}).when("/contact", {
 		templateUrl:  "/assets/layouts/ngView.html",
-		controller: "pageCtrl",
-		controllerAs: "pages",
-		resolve: { load: pageCtrl.loadView }
+		resolve: {load: loadView},
+		controller: "pageCtrl",	controllerAs: "pages"
+
 	}).when("/users", {
 		templateUrl: "/assets/layouts/ngView.html",
-		controller: "usersCtrl",
-		controllerAs: "users",
-		resolve: { load: usersCtrl.loadView }
-
+		resolve: {load: loadView},
+		controller: "usersCtrl", controllerAs: "users"
 	}).when("/users/:id", {
 		templateUrl:  "/assets/layouts/ngView.html",
-		controller: "usersCtrl",
-		controllerAs: "users",
-		resolve: { load: usersCtrl.loadView }
+		resolve: {load: loadView},
+		controller: "usersCtrl", controllerAs: "users"
 	}).when("/users/:id/edit", {
 		templateUrl:  "/assets/layouts/ngView.html",
-		controller: "usersCtrl",
-		controllerAs: "users",
-		resolve: { load: usersCtrl.loadView }
+		resolve: {load: loadView} ,
+		controller: "usersCtrl", controllerAs: "users"
+		
 	}).when("/signin", {
 		templateUrl:  "/assets/layouts/ngView.html",
-		controller: "sessionsCtrl",
-		controllerAs: "sessions",
-
-		resolve: { load: sessionsCtrl.loadView }
+		resolve: {load: loadView},
+		controller: "sessionsCtrl",	controllerAs: "sessions"
 	}).when("/sessions", {
 		templateUrl:  "/assets/layouts/ngView.html",
-		controller: "sessionsCtrl",
-		controllerAs: "sessions",
-		resolve: { load: sessionsCtrl.loadView }
-
+		resolve: {load: loadView},
+		controller: "sessionsCtrl", controllerAs: "sessions"
+	
 	}).when("/", {
 		templateUrl:  "/assets/layouts/ngView.html",
-		controller: "pageCtrl",
-		controllerAs: "pages",
-		resolve: { load: sessionsCtrl.loadView }
+		resolve: { load: loadView },
+		controller: "pageCtrl", controllerAs: "pages"
+		
 	})
 
 	
@@ -81,22 +72,19 @@ app.config(["$routeProvider", '$locationProvider', ($routeProvider, $locationPro
 
 app.run(["$rootScope", "$route", "$location", ($rootScope, $route, $location) -> 
 	$rootScope.$on '$includeContentLoaded', ()->
-		console.log "----- event( $includeContentLoaded )"
 		$(document).foundation()
-		#contentCtrl.updatePage
-
-
+		
 	$rootScope.$on '$viewContentLoaded', ()->
-		console.log "----- event( $viewContentLoaded )"
 		$(document).foundation()
-		#contentCtrl.updatePage
 
+
+	###
 	$rootScope.$on '$locationChangeSuccess', ()->
 		console.log "------ event( locationChangeSuccess )"
-
 	$rootScope.$on '$routeChangeSuccess', ()->
 		console.log "------ event( routeChangeSuccess )"
-
+	###
+	
 	$location.skipReload = (lastRoute) ->
 		un = $rootScope.$on('$locationChangeSuccess', (event) ->
 			console.log "------------ ##  $location.skipReload -> event( $locationChangeSuccess event )"
@@ -107,7 +95,7 @@ app.run(["$rootScope", "$route", "$location", ($rootScope, $route, $location) ->
 ])
 
 
-app.factory("ViewService", [ () ->
+app.factory("ViewService", [ "$route", "$location", "$cookies", ($route, $location, $cookies) ->
 	return { 
 		view:  { source: "json", site_url: "kogarah.localhost", current_user: null, path: null, flash: null, template: "", data: "", title: "", syn_url: false }, 
 		links: { root: "/", about: "/about", contact: "/contact", help: "/help", signin:"/signin", signup: "/signup"},
@@ -115,11 +103,25 @@ app.factory("ViewService", [ () ->
 		token: {},
 		persist: false,
 		set: ( data, xsrf ) ->
+			#console.log "------- ViewService.set(data) -> "
+			#console.log data
+
 			this.view = angular.copy(data)
 			this.view.site_url = app.siteUrl unless this.view.site_url?
 			this.view.title = app.siteTitle unless this.view.title?
 			this.token = xsrf if xsrf
+			
+			console.log "------- ViewService.set  - end : this.view ="
+			console.log this.view
 			return this
+
+		, pushStateURL: (caller) ->
+			console.log "------ #.  After " +caller+ ".then( run pushStateURL )"
+			if this.view? and this.view.path.current? and this.view.syn_url
+				console.log("-------- ##. jsonp:pushStateURL() :: override location by -> view.path.current = " + this.view.path.current)
+				this.view.syn_url = false
+				this.persist = true
+				$location.skipReload($route.current).url(this.view.path.current).replace()
 	}
 ])
 
@@ -127,121 +129,95 @@ app.factory("ViewService", [ () ->
 app.factory("Jsonp", ["$route", "$location", "$http", "$q", "$cookies","ViewService", "$rootScope", ($route, $location, $http, $q, $cookies,  ViewService, $rootScope) -> 
 	return {
 		vs: ViewService
-		, fetch: (q, url, params) ->
-			if params? 
-				params.callback = "JSON_CALLBACK" 
-			else 
-				params = {callback: "JSON_CALLBACK"}
-
-			conn = $http.jsonp(url, {params: params})
-
-			console.log("-----   Jsonp:fetch( url: " +url+ ", params : " +params+ ") ")
-			console.log "------ #. conn =  "
-			console.log conn
-
+		
+		, connects: (q, config)->
+			#console.log "---------- connects(q,config)"
+			conn = $http(config)
 			conn.success( (data, status, header, config) ->
-				console.log("--------- #. Jsonp : fetch.Success - status = " + status)
-				console.log("--------- #. Jsonp : fetch.Success - header = " )
-				console.log header
-				console.log("--------- #. Jsonp : fetch.Success - data = " )
-				console.log data
+				#console.log("--------- #. Jsonp : connects.Success - data = ")
+				#console.log data
 				q.resolve(data)
 			).error( (data, status, header, config) ->
-				console.log("--------- #. Jsonp : ! fetch.Error - status = " + status)
-				console.log("--------- #. Jsonp : ! fetch.Error - header = " )
-				console.log header
-				console.log("--------- #. Jsonp : ! fetch.Error - data = " )
-				console.log data
-				q.reject()
+				#console.log("--------- #. Jsonp : connects.Error ! - status = " +status )
+				q.reject(status)
 			)
 
-		, post: (q, url, data) ->
-			conn  = $http.post(url, data)
-			console.log "------- #. Jsonp.post : conn = "
-			console.log conn 
-
-			conn.success( (data, status, header, config) ->
-				console.log("------- #. Jsonp.post : success :: status = " + status)
-				console.log("------------   data =")
-				console.log data
-				q.resolve(data)
-
-			).error( (data, status, header, config) ->
-				console.log("------- #. Jsonp.post : Error ! :: status = " + status)
-				console.log("------------   data =")
-				console.log data
-				q.reject()
-			)
-
-			
 		, updatePage: (title, scope) ->
 			angular.element("title").html(title) if title?
 			scope.$digest()
 
-		, loadView: () ->
-			console.log "----- jsonp:loadView()"
+
+		, request: (q, caller, method, url, data) ->
+			if method == "JSONP"
+				if data?
+					data.callback = "JSON_CALLBACK" 
+				else
+					data = {callback: "JSON_CALLBACK"}
+				config = {method: method, url: url, params: data }
+			else	# POST#create, PATCH#update
+				config = {method: method, url, data: data}
+
+			this.connects(q, config).then( (response) ->
+				#console.log("------ " +caller+ " -> jsonp:request()::  response: OK ---- response.data = ")
+				#console.log response.data
+				ViewService.set( response.data, $cookies["XSRF-TOKEN"] )
+			, (response) ->
+				#console.log("-------> jsonp:request()::  response: NOK !  ")
+				q.reject("jsonp.request")
+			)
+
+		, setView: () ->
 			if ViewService.persist
-				console.log "----- jsonp:loadView() :: Persist view activated"
+				console.log "----- jsonp:setView() :: Persist view activated"
 				ViewService.persist = false
 			else
-				query = $q.defer()
-				query.promise.then( () ->
-					console.log "----- #.  Once loadedView().then() "
-					if ViewService.view? and ViewService.view.path.current? and ViewService.view.syn_url
-						console.log("----- jsonp:loadView() :: override location by -> view.path.current = " + ViewService.view.path.current)
-						ViewService.view.syn_url = false
-						ViewService.persist = true
-						$location.skipReload($route.current).url(ViewService.view.path.current).replace()
+				q = $q.defer()
+				q.promise.then( () ->
+					ViewService.pushStateURL("Jsonp.setView()")
 				)
 					
 				if window.viewPreload?
-					console.log "----- jsonp:loadView() :: load window.viewPreload"
+					console.log "----- jsonp:setView() :: load window.viewPreload"
 					ViewService.set(window.viewPreload, $("meta[name=\"csrf-token\"]").attr("content") )
 					window.viewPreload = null
-					query.resolve("window.viewPreload")
+					q.resolve("window.viewPreload")
 				else
-					console.log "----- jsonp:loadView() :: init jsonp-request"
-					console.log "----- jsonp:loadView() :: init jsonp-request :: route.current"
-					console.log $route.current
+					console.log "----- jsonp:setView() :: init request(jsonp)"
 					if $route.current? then url_param = $route.current.params else url_param = null
-					this.fetch(query, $location.url(), url_param).then( (response) -> 
-						console.log "----- jsonp:loadView() :: init jsonp-request ::: OK! ---- data = "
-						console.log response
-						ViewService.set( response.data, $cookies["XSRF-TOKEN"] )
-						query.resolve("jsonp.fetch - OK")
-					, (response) -> 
-						console.log "----- jsonp:loadView() :: init jsonp-request ::: NOK ! ! !"
-						query.reject("jsonp.fetch - NOK ! ")
-					)
-			return query
+					this.request(q, "jsonp.setView()", "JSONP", $location.url(), url_param)
+					#console.log "------- jsonp.setView : ViewService.view = "
+					#console.log ViewService.view
+			return q
 
-		, postForm: (data) ->
-			console.log "------ jsonp:postForm"
-			url = "/sessions"
-			request = $q.defer()
-			this.post(request, url, data).then( (response) ->
-				console.log "------- jsonp : postForm :: OK ! ------ data = "
-				console.log response
-			, (response) -> 
-				console.log "------- jsonp : postForm :: OK ! ------ data = "
-				console.log response
+		, postForm: (url, method, data) ->
+			console.log "------ jsonp.postForm : data = "
+			console.log data
+			q = $q.defer()
+			q.promise.then( () ->
+					ViewService.pushStateURL("Jsonp.postForm()")
 			)
-			
+			this.request(q, "jsonp.postForm()", method, url, data)	
 			
 	}
 ])
 
+loadView = ["Jsonp",  (Jsonp) -> 
+	console.log "----------- ### loadView -> setView" 
+	Jsonp.setView()
+]
 
 
 
 
-contentCtrl = app.controller("contentCtrl", ["Jsonp", "$scope", "$rootScope", "$route", "$location", "$anchorScroll", "$q", (Jsonp, $scope, $rootScope, $route, $location, $anchorScroll, $q) ->
+contentCtrl = app.controller("contentCtrl", ["Jsonp", "$scope", "$rootScope", "$route", "$location", "$anchorScroll", "$q", "$cookies", (Jsonp, $scope, $rootScope, $route, $location, $anchorScroll, $q, $cookies) ->
 	content = this
+
 	$rootScope.$on("$routeChangeError", (event, current, prev, reject) -> 
 		console.log "---- e( routeChangeError )"
 		content.j.vs.view.flash = {error: "Network Error ! ---" + reject.message}
 		console.log("    ---- path.current = "+content.j.vs.view.path.current)
 	)
+
 	content.page = 0	
 	content.j = Jsonp
 	console.log "---- contentCtrl.init"
@@ -270,10 +246,12 @@ contentCtrl = app.controller("contentCtrl", ["Jsonp", "$scope", "$rootScope", "$
 	content.hideAlert = (key) ->
 		delete content.j.vs.view.flash[key]
 	
+	#	for update.js.erb Calls
 	content.updateLocation = (path) ->
 		oldPath = $location.path()
 		if oldPath == path
-			content.j.loadView()
+			console.log "---------- content.updateLocation(): content.j.setView"
+			content.j.setView()
 			content.updatePage()
 		else
 			$scope.$apply($location.path(path))
@@ -293,6 +271,7 @@ contentCtrl = app.controller("contentCtrl", ["Jsonp", "$scope", "$rootScope", "$
 		$location.hash(current)
 
 	content.paginate_append = (new_page, new_data) ->
+		
 		if content.j.vs.view.data.paginate.loaded && content.j.vs.view.data.paginate.ids
 			content.j.vs.view.data.paginate.loaded.push(new_page)
 			content.j.vs.view.data.paginate.ids.push(new_data.pack[0].id)
@@ -308,34 +287,38 @@ contentCtrl = app.controller("contentCtrl", ["Jsonp", "$scope", "$rootScope", "$
 			
 
 	content.paginate_load = (page) ->
-		query = $q.defer()
+		paginate = content.j.vs.view.data.paginate
 		content.j.vs.view.data.paginate.loading = true
-		content.j.fetch(query, content.j.vs.view.data.paginate.path, {page: page} ).then( (response) ->
+
+		q = $q.defer()
+		config = {method: "JSONP", url: paginate.path, params: {callback: "JSON_CALLBACK", page: page} }
+		content.j.connects(q, config).then( (response) ->
+			console.log 
 			if (response.data.data.paginate.path == content.j.vs.view.data.paginate.path) && (response.data.data.paginate.type == content.j.vs.view.data.paginate.type)
 				content.paginate_append(page, response.data.data.paginate)
 			else
-				content.j.vs.set(response.data)
-				content.j.vs.token = $cookies["XSRF-TOKEN"] if $cookies["XSRF-TOKEN"]?
+				content.j.vs.set(response.data, $cookies["XSRF-TOKEN"])
 		, (response) ->
 			content.j.vs.view.data.paginate.loading = false
-			content.j.vs.view.flash = {error: "$http request error on "+ content.j.vs.view.data.paginate.path }
+			content.j.vs.view.flash = {error: "$http request error on "+ paginate.path }
 		)
-		return query.promise
+		return q.promise
 
 	content.paginate_page = (page) ->
 		console.log "----- content.paginate_page("+page+")"
-		if page>0 && page <= content.j.vs.view.data.paginate.total && !content.j.vs.view.data.paginate.loading
-
-			paginate_old = content.j.vs.view.data.paginate
+		paginate = content.j.vs.view.data.paginate
+		if page>0 && page <= paginate.total && !paginate.loading
+			paginate_old = paginate
 			if paginate_old? && paginate_old.loaded?
 				idx = paginate_old.loaded.indexOf(page)
 				if idx > -1
-					content.j.vs.view.data.paginate.page = page
+					paginate.page = page
 					content.paginate_scroll(idx)
 				else
 					content.paginate_load(page)
 			else
 				content.paginate_load(page)
+
 
 	content.alertBox = (message) ->
 		alert message
@@ -346,11 +329,9 @@ contentCtrl = app.controller("contentCtrl", ["Jsonp", "$scope", "$rootScope", "$
 	content.syncURL = (e) ->
 		console.log "--------  content.syncURL(event)::  event ="
 		console.log e
-
 		content.j.vs.persist = true
 		content.j.vs.view.flash = {info: "Persist view activated"}
 		$location.skipReload($route.current).url("/somelink?status=test&page=4").replace()
-
 		false
 
 	$scope.content = content
@@ -359,30 +340,23 @@ contentCtrl = app.controller("contentCtrl", ["Jsonp", "$scope", "$rootScope", "$
 
 
 
-	
-pageCtrl = app.controller("pageCtrl", () -> 
+pageCtrl = app.controller("pageCtrl", ()->
 	page = this
 	console.log "---- pageCtrl.init" 
 	page
 )
 
-pageCtrl.loadView = ["Jsonp",  (Jsonp) -> 
-	Jsonp.loadView()
-]
+
 
 
 
 usersCtrl = app.controller("usersCtrl", ["Jsonp", "$scope", "$rootScope", "$location",  (Jsonp, $scope, $rootScope, $location) -> 
 	users = this
 	users.j = Jsonp
-	users.data = Jsonp.vs.view.data
-
-	console.log("----- Jsonp.vs.view")
-	console.log Jsonp.vs.view
-
+	
 	users.formChecked = false
 	
-	users.submitForm = (form, event) ->
+	users.submitForm = (url, form, method, event) ->
 		if form.$invalid
 			users.formChecked = true
 			event.preventDefault()
@@ -391,8 +365,6 @@ usersCtrl = app.controller("usersCtrl", ["Jsonp", "$scope", "$rootScope", "$loca
 			true
 
 	users.fetchErrors = () ->
-		console.log "-------users.checkErrors() - data.main.pack.extra"
-		console.log users.j.vs.view.data.main.pack.extra
 		if users.j.vs.view.data.main.pack.extra && users.j.vs.view.data.main.pack.extra.errors
 			draw = angular.element("div.profile>div>div.draw")
 			draw.click() if draw.attr("details") == "show"
@@ -412,34 +384,21 @@ usersCtrl = app.controller("usersCtrl", ["Jsonp", "$scope", "$rootScope", "$loca
 	users
 ])
 
-usersCtrl.loadView = ["Jsonp",  (Jsonp) -> 
-	Jsonp.loadView()
-]
 
 sessionsCtrl = app.controller("sessionsCtrl", ["Jsonp", (Jsonp) ->
 	sessions = this
 	sessions.j = Jsonp
 	sessions.data = {}
 	console.log "---- sessionsCtrl.init"
-	sessions.submitForm = (form, event) ->
+
+	sessions.submitForm = (url, form, event) ->
 		event.preventDefault()
-		console.log("-------- Session.submitForm() :: form = ")
-		
-
-		console.log sessions.data
-
-		sessions.j.postForm(sessions.data)
-
-		
-
-		#Jsonp.post()
+		sessions.j.postForm( url, "POST", sessions.data)
 
 	sessions
 ])
 
-sessionsCtrl.loadView = ["Jsonp", (Jsonp) -> 
-	Jsonp.loadView()
-]
+
 
 postsCtrl = app.controller("postsCtrl", ["Jsonp", (Jsonp) -> 
 	posts = this
@@ -458,9 +417,9 @@ postsCtrl = app.controller("postsCtrl", ["Jsonp", (Jsonp) ->
 
 	posts.compareTime = (subj, ref) ->
 		if subj and ref and (subj > ref)
-			return true
+			true
 		else
-			return false
+			false
 	
 	posts.current_time = posts.resetTime()
 	console.log "---- postsCtrl :: " + posts.current_time
@@ -474,7 +433,7 @@ postsCtrl = app.controller("postsCtrl", ["Jsonp", (Jsonp) ->
 app.directive "scrolling", [ "$window", ($window) ->
 	restrict: "A",
 	link: (scope, elem, attrs, event) ->
-		console.log " -----##          scrolling       ##-----"
+		#		console.log " -----##          scrolling       ##-----"
 		footerHeight = 30
 		angular.element($window).on "scroll", (event) ->
 			if !scope.content.j.vs.view.data.paginate.loading &&

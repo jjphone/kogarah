@@ -1,9 +1,8 @@
 class SessionsController < ApplicationController
 	def new 
 		Rails.logger.debug "----- Sessions#new"
-		flashs = flash.to_hash
+		@view = createView(signin_path, session_html("new"), 'Trainbuddy | Login', flash.to_hash  )
 		flash.clear
-		@view = parseView(flashs, html_page('new'), 'Trainbuddy | Login', signin_path, nil)
 		renderView
 	end
 
@@ -11,13 +10,15 @@ class SessionsController < ApplicationController
 		Rails.logger.debug "----- Sessions#create"
 		user = User.find_by(email: params[:session][:email].downcase)
 		if user && user.authenticate(params[:session][:password])
+			flashs = {info: "User login"}
 			sign_in user
-			redirect_back_or(current_user.to_slug, {info: "User login."} )
+			redirect_back_or(current_user.to_slug, flashs)
 		else
 			flashs = {error: "Invalid email/password combination"}
-			@view = parseView( flashs, html_page("new"), "Trainbuddy | Login - Error", "/signin?login=error", nil)
+			@view = createView("/signin?login=error", session_html("new"), 'Trainbuddy | Login - Error', flash.to_hash  )
 			renderViewWithURL(4, nil)
 		end
+		flash.clear
 		# Rails.logger.debug @view.inspect
 	end
 
@@ -26,8 +27,9 @@ class SessionsController < ApplicationController
 		sign_out
 		redirect_format(root_url, {info: "User logout."}, params[:callback] )
 	end
-	
-	def html_page(page)
+
+private
+	def session_html(page)
 		case page 
 		when 'new'
 			asset_path("/sessions/new.html")

@@ -1,6 +1,6 @@
 module UsersHelper
 
-	def user_page(page)
+	def user_html(page)
 		case page 
 		when 'new'
 			asset_path("/users/new.html")
@@ -13,8 +13,18 @@ module UsersHelper
 		end
 	end
 
+	def page_links(level)
+		@view.data.merge!( {level: level, related: {home: "/", messages: "/chats", map: "/maps"}} )
+	end
+
+
 	def associate_actions(user_id, other_id)
-		relation_status = Relationship.status(user_id, other_id)
+		
+		# relation_status = Relationship.status(user_id, other_id)
+		# or 
+		# 	use in non - signin 
+		relation_status = (user_id && other_id) ?  Relationship.status(user_id, other_id) : 0
+
 		relates = "/relationships?user=#{other_id}"
 		msg_user = "/chat/new?user=#{other_id}"
 		case relation_status
@@ -33,23 +43,28 @@ module UsersHelper
 		end
 	end
 
-	def gen_links(level)
-		@view.related_links( {home: "/", messages: "/chats", map: "/maps"} )
-		@view.level_links(level)
+	# convert @user into View object
+	# for userController and relationCOntroller
+	def show_user(owner_id, url, page, msg)
+		@view = createView( url, page, nil, msg )
+		@view.user_main(@user)
+		page_links( associate_actions(owner_id, @user.id) )
+		posts = @user.posts.paginate(page: params[:page] )
+		posts_json = posts.map{ |p| p.to_h(@user.name, @user.avatar.url) }
+		@view.paginates("posts", url, posts, posts_json )
+		@view
 	end
 
-	def show_user(owner_id, param_str)
-		@view = parseView(nil,nil,nil,nil,nil)
-		if @view.parse_user( @user, param_str , user_page("show"), user_page("index") )
-			gen_links( associate_actions(owner_id, @user.id) )
-			posts = @user.posts.paginate(page: params[:page])
-			paginate = posts.map {|p| p.to_h(@user.name, @user.avatar.url) }
-			@view.parse_paginate("posts", posts, "/users/#{@user.id}", paginate )
-		end
-		@view.flash = flash.to_hash
-		flash.clear
-		return @view
+
+	# convert the users.paginate into View object
+	# for userController and relationCOntroller
+	def list_users(url, page, users, paginate_url, msg)
+		@view = createView(url, page, "Trainbuddy | Users", msg)
+		@view.paginates("users", paginate_url, users, users.map(&:to_h ) )
+		page_links( {all:"/users", friends:"/users?type=3", pending:"/users?type=2", blocked:"/users?type=-1", requested:"/users?type=1"} )
+		@view
 	end
+
 
 end
 

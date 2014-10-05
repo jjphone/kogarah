@@ -1,8 +1,9 @@
-<div class="top-row" >
-
+<div class="top-row" ng-controller="usersCtrl as users" >
 	<div class="profile large-offset-3">
 
 		<div> 
+			<div> {{1}} </div>
+
 			<form accept-charset="UTF-8" action="{{users.user_paths(users.data.main.pack.id, 'create')}}" encrype="multipart/form-data" method="post" data-remote="true" name="profile" ng-submit="users.submitForm(profile,$event)">
 				<h2 class="small-center">New User</h2>
 
@@ -17,7 +18,7 @@
 				<hr class="submit" />
 				<div class="submit-buttons">
 					<div><ul class="small-block-grid-2">
-						<li><input name="commit" type="submit" value="Create" ng-click="users.submitForm(profile,$event)" /></li>
+						<li><input name="commit" type="submit" value="Create" ng-click="users.submitForm('/users', profile, 'POST', $event)" /></li>
 						<li><button type="reset">Reset</button></li>
 					</ul></div>
 				</div>

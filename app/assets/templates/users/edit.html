@@ -1,9 +1,9 @@
-<div class="top-row" >
+<div class="top-row" ng-controller="usersCtrl as users" >
 
 	<div class="profile large-offset-3">
 
 		<div> 
-			<form accept-charset="UTF-8" action="{{users.user_paths(users.data.main.pack.id, 'update')}}" enctype="multipart/form-data" method="post" data-remote="true" name="profile" >
+			<form accept-charset="UTF-8" action="{{users.user_paths(users.j.vs.view.data.main.pack.id, 'update')}}" enctype="multipart/form-data" method="post" data-remote="true" name="profile" >
 				<h2 class="small-center">Update Profile</h2>
 
 				<div class="hidden">
@@ -17,7 +17,8 @@
 				<hr class="submit" />
 				<div class="submit-buttons">
 					<div><ul class="small-block-grid-2">
-						<li><input name="commit" type="submit" value="Update" ng-click="users.submitForm(profile,$event)" /></li>
+						<li>
+							<input name="commit" type="submit" value="Update" ng-click="users.submitForm(users.user_paths(users.j.vs.view.data.main.pack.id, 'update'), profile, 'PATCH', $event)" /></li>
 						<li><button type="reset">Reset</button></li>
 					</ul></div>
 				</div>

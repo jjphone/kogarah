@@ -5,12 +5,14 @@ class ApplicationController < ActionController::Base
 	require 'rack/utils'
 	#protect_from_forgery with: :null_session
 	include SessionsHelper
+	include UsersHelper
 
 
 	def redirect_format(url, message, callback)
 		respond_to do |format|
 			format.json {
-				url = jsonp_url(url, callback)
+				#url = jsonp_url(url, callback)
+				url = redirect_param(url)
 				Rails.logger.debug "------ ApplicationController : redirect_format :: url.json = #{url}"
 				redirect_to(url, format: :json, flash: message)
 			}
@@ -26,11 +28,8 @@ class ApplicationController < ActionController::Base
 	def jsonp_url(url, callback)
 		link = URI url
 		param_hash = Rack::Utils.parse_nested_query(link.query)
-		if callback 
-			seq = callback[/\d+/].to_i
-		else
-			seq = 0
-		end
+		seq = callback ? callback[/\d+/].to_i : 0
+
 		if param_hash && !param_hash.empty?
 			Rails.logger.debug("---------  ApplicationController : jsonp_url :: param_hash = #{param_hash.to_s}")
 			if angular_callback(link.query)
@@ -47,6 +46,27 @@ class ApplicationController < ActionController::Base
 		link.to_s
 	end
 
+	# url + ?redirect=true
+	def redirect_param(url)
+		link = URI url
+		param_hash = Rack::Utils.parse_nested_query(link.query)
+		param_hash["redirect"] = true
+		link.query = param_hash.to_query
+		link.to_s
+	end
+
+	# remove ?redirect=true
+	def remove_redirect(url)
+		link = URI url
+		param_hash = Rack::Utils.parse_nested_query(link.query)
+		if !param_hash.empty? && param_hash["redirect"]
+			param_hash.delete("redirect")
+			link.query = param_hash.to_query
+		end
+		link.to_s
+	end
+
+
 	# remove callback=angular.callbacks._<seq> from url if any
 	def html_url(url)
 		link = URI url
@@ -58,13 +78,8 @@ class ApplicationController < ActionController::Base
 	end
 
 	def angular_callback(query)
-		Rails.logger.debug("------- ##. ApplicationController:angular_callback( query: #{query} ) ")
 		callback = query[/callback=angular\.callbacks._\d+/]
-		if callback
-			callback[/\d+/].to_i
-		else
-			nil
-		end
+		return callback ? callback[/\d+/].to_i : nil
 	end
 
 	def redirect_back_or(default, message)
@@ -74,14 +89,10 @@ class ApplicationController < ActionController::Base
 	end
 
 
-	def parseView(flashs, page, title, url, data )
-		http_path = { prev: request.env["HTTP_REFERER"], current: url }
-		user = current_user ? current_user.to_h : nil
-		params = { 	path: http_path, flash: flashs, 
-					current_user: user, 
-					template: page, title: title, data: data,  source: nil,
-				}
-		View.new(params)
+	def createView(url, page, title, flash)
+		paths = { prev: request.env["HTTP_REFERER"], current: url }
+		current = current_user ? current_user.to_h : nil
+		View.new( {path: paths, flash: flash, current_user: current, template: page, title: title} )
 	end
 
 
@@ -90,13 +101,18 @@ class ApplicationController < ActionController::Base
 		# syncLevel = 1 - update json
 		# syncLevel = 2 - js + json
 		# syncLevel = 4 - all
+		flash.clear
 		respond_to do |format|
 			caller = [controller_name,action_name].join("#")
 			format.json {
 				Rails.logger.debug "--- #{caller} :: render format.json"
 				@view.source = "json"
-				@view.syn_url = true if syncLevel > 0 || params[:redirect]
+				if syncLevel > 0 || params[:redirect]
+					@view.syn_url = true
+					@view.path[:current] = remove_redirect( @view.path[:current] )
+				end
 				set_csrf_cookie_for_ng
+				Rails.logger.debug @view.inspect
 				render json: @view, content_type: 'application/javascript' , callback: params[:callback]
 			}
 			format.js {
@@ -109,6 +125,7 @@ class ApplicationController < ActionController::Base
 				Rails.logger.debug "--- #{caller} :: render format.html"
 				@view.source = "html"
 				@view.syn_url = true if syncLevel > 3
+				Rails.logger.debug @view.inspect
 				render '/layouts/default' 
 			}
 		end

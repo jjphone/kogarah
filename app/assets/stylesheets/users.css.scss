@@ -53,7 +53,7 @@ div#user-info>div{
 
 div.submit-buttons {
 	@extend .rows;
-	>div { @extend columns; @extend .small-12;
+	>div { @extend columns; @extend .small-12; 
 			@extend .large-10; @extend .large-offset-2;
 			padding: 0 1em;
 			@include radius(5px);

@@ -19,9 +19,11 @@ module SessionsHelper
 
 	def sign_out 
 		#update_attribute bypass password validation
-		current_user.update_attribute(:remember_token, User.digest(User.new_remember_token) )
-		cookies.delete(:remember_token)
-		self.current_user = nil
+		if current_user
+			current_user.update_attribute(:remember_token, User.digest(User.new_remember_token) )
+			cookies.delete(:remember_token)
+			self.current_user = nil
+		end
 	end
 	
 	def signed_in?
@@ -57,17 +59,21 @@ module SessionsHelper
 	# => @view with new URL if error
 	def auth_user
 		@user = User.find_by(id: params[:id] )
-		if @user
+		if @user 
 			if current_user? @user 
 				@view = nil
 			else
-				flash = { error: "Invalid operation - Insufficient priviledge on User @#{@user.login}" }
-				@view = show_user(current_user.id, nil)
+				#show @user 
+				flash.clear
+				flashs = { error: "Insufficient priviledge on @#{@user.login}" }
+				show_user(current_user.id, @user.to_slug, user_html("show"), flashs )
 			end
 		else
 			flashs = { error: "Invalid user id : #{params[:id].to_i}" }
-			@view = parseView(flashs, "/assets/pages/home.html", "Trainbuddy | Home", '/', nil)
+			redirect_format("/", flashs, params[:callback] )
 		end
 	end
+
+
 
 end

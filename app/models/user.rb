@@ -67,9 +67,15 @@ class User < ActiveRecord::Base
 	BLOCKED	= -1
 
 
-	def to_h(extra=nil)
+	def to_h(extra = nil)
 		return { id: id, name: name, login: login, email: email, phone: phone, avatar_url: avatar.url, extra: extra}
 	end
+	
+	def to_slug
+		# login ?	"/u/#{login}" : "/users/#{id}"
+		"/users/#{id}"
+	end
+
 
 	def User.new_remember_token
 		begin 
@@ -104,10 +110,7 @@ class User < ActiveRecord::Base
 		end
 	end
 
-	def to_slug
-		# login ?	"/u/#{login}" : "/users/#{id}"
-		"/users/#{id}"
-	end
+
 
 private
 

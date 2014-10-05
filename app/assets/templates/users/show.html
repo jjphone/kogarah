@@ -1,17 +1,18 @@
-<div class="top-row" >
+<div class="top-row" ng-controller="usersCtrl as users" >
 
 	<div>
 		<div class="grids" id="user-info"  >
 			<div>
-				<div class="portrait"> <img ng-src="{{users.data.main.pack.avatar_url}}" /> </div>
-				<div class="username"><h3> {{users.data.main.pack.name}} </h3></div>
+				<div class="portrait">
+					<img ng-src="{{users.j.vs.view.data.main.pack.avatar_url}}" /> </div>
+				<div class="username"><h3> {{users.j.vs.view.data.main.pack.name}} </h3></div>
 			</div>
 			<hr/>
 			<div><div>Relation:</div><div id="relation-status">@relation[0]</div></div>
-			<div><div>Login:</div><div> {{users.data.main.pack.login}} </div></div>
-			<div><div>URL:</div><div><a ng-href="/users/{{users.data.main.pack.login}}">/users/{{users.data.main.pack.login}}</a></div></div>
-			<div><div>Email:</div><div> {{users.data.main.pack.email}} </div></div>
-			<div><div>Phone:</div><div> {{users.data.main.pack.phone}} </div></div>
+			<div><div>Login:</div><div> {{users.j.vs.view.data.main.pack.login}} </div></div>
+			<div><div>URL:</div><div><a ng-href="/users/{{users.j.vs.view.data.main.pack.login}}">/users/{{users.j.vs.view.data.main.pack.login}}</a></div></div>
+			<div><div>Email:</div><div> {{users.j.vs.view.data.main.pack.email}} </div></div>
+			<div><div>Phone:</div><div> {{users.j.vs.view.data.main.pack.phone}} </div></div>
 			<hr class="underline" />
 			<div><div>Post</div><div> Post Options</div></div>
 		</div>
