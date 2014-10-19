@@ -76,8 +76,6 @@ app.run(["$rootScope", "$route", "$location", ($rootScope, $route, $location) ->
 		
 	$rootScope.$on '$viewContentLoaded', ()->
 		$(document).foundation()
-
-
 	###
 	$rootScope.$on '$locationChangeSuccess', ()->
 		console.log "------ event( locationChangeSuccess )"
@@ -103,16 +101,11 @@ app.factory("ViewService", [ "$route", "$location", "$cookies", ($route, $locati
 		token: {},
 		persist: false,
 		set: ( data, xsrf ) ->
-			#console.log "------- ViewService.set(data) -> "
-			#console.log data
-
 			this.view = angular.copy(data)
 			this.view.site_url = app.siteUrl unless this.view.site_url?
 			this.view.title = app.siteTitle unless this.view.title?
 			this.token = xsrf if xsrf
-			
-			console.log "------- ViewService.set  - end : this.view ="
-			console.log this.view
+			console.log("------- ViewService.set  - end : this.view =" , this.view)
 			return this
 
 		, pushStateURL: (caller) ->
@@ -129,13 +122,10 @@ app.factory("ViewService", [ "$route", "$location", "$cookies", ($route, $locati
 app.factory("Jsonp", ["$route", "$location", "$http", "$q", "$cookies","ViewService", "$rootScope", ($route, $location, $http, $q, $cookies,  ViewService, $rootScope) -> 
 	return {
 		vs: ViewService
-		
 		, connects: (q, config)->
-			#console.log "---------- connects(q,config)"
 			conn = $http(config)
 			conn.success( (data, status, header, config) ->
-				#console.log("--------- #. Jsonp : connects.Success - data = ")
-				#console.log data
+				#console.log("--------- #. Jsonp : connects.Success - data = ", data)
 				q.resolve(data)
 			).error( (data, status, header, config) ->
 				#console.log("--------- #. Jsonp : connects.Error ! - status = " +status )
@@ -146,25 +136,13 @@ app.factory("Jsonp", ["$route", "$location", "$http", "$q", "$cookies","ViewServ
 			angular.element("title").html(title) if title?
 			scope.$digest()
 
-
-		, request: (q, caller, method, url, data) ->
-			if method == "JSONP"
-				if data?
-					data.callback = "JSON_CALLBACK" 
-				else
-					data = {callback: "JSON_CALLBACK"}
-				config = {method: method, url: url, params: data }
-			else	# POST#create, PATCH#update
-				config = {method: method, url, data: data}
-
-			this.connects(q, config).then( (response) ->
-				#console.log("------ " +caller+ " -> jsonp:request()::  response: OK ---- response.data = ")
-				#console.log response.data
-				ViewService.set( response.data, $cookies["XSRF-TOKEN"] )
+		, request: (q, config) ->
+			this.connects(q,config).then( (response) ->
+				ViewService.set(response.data, $cookies["XSRF-TOKEN"] )
 			, (response) ->
-				#console.log("-------> jsonp:request()::  response: NOK !  ")
-				q.reject("jsonp.request")
+				q.reject("Error: jsonp.request")
 			)
+
 
 		, setView: () ->
 			if ViewService.persist
@@ -184,19 +162,23 @@ app.factory("Jsonp", ["$route", "$location", "$http", "$q", "$cookies","ViewServ
 				else
 					console.log "----- jsonp:setView() :: init request(jsonp)"
 					if $route.current? then url_param = $route.current.params else url_param = null
-					this.request(q, "jsonp.setView()", "JSONP", $location.url(), url_param)
-					#console.log "------- jsonp.setView : ViewService.view = "
-					#console.log ViewService.view
-			return q
+					if url_param?
+						url_param.callback = "JSON_CALLBACK"
+					else
+						url_param = {callback: "JSON_CALLBACK"}
+					config = {method: "JSONP", url: $location.url(), params: url_param }
 
-		, postForm: (url, method, data) ->
-			console.log "------ jsonp.postForm : data = "
-			console.log data
+					this.request(q, config)
+			return q
+		, http: (config) ->
+			console.log("------ jsonp.http : data = ", config.data)
+			
 			q = $q.defer()
 			q.promise.then( () ->
-					ViewService.pushStateURL("Jsonp.postForm()")
+				ViewService.pushStateURL("Jsonp.http()")
 			)
-			this.request(q, "jsonp.postForm()", method, url, data)	
+			this.request(q, config)
+			
 			
 	}
 ])
@@ -293,7 +275,6 @@ contentCtrl = app.controller("contentCtrl", ["Jsonp", "$scope", "$rootScope", "$
 		q = $q.defer()
 		config = {method: "JSONP", url: paginate.path, params: {callback: "JSON_CALLBACK", page: page} }
 		content.j.connects(q, config).then( (response) ->
-			console.log 
 			if (response.data.data.paginate.path == content.j.vs.view.data.paginate.path) && (response.data.data.paginate.type == content.j.vs.view.data.paginate.type)
 				content.paginate_append(page, response.data.data.paginate)
 			else
@@ -327,12 +308,14 @@ contentCtrl = app.controller("contentCtrl", ["Jsonp", "$scope", "$rootScope", "$
 		content.j.vs.view.source
 
 	content.syncURL = (e) ->
-		console.log "--------  content.syncURL(event)::  event ="
-		console.log e
+		console.log("--------  content.syncURL(event)::  event =", e)
 		content.j.vs.persist = true
 		content.j.vs.view.flash = {info: "Persist view activated"}
 		$location.skipReload($route.current).url("/somelink?status=test&page=4").replace()
 		false
+
+	content.demo = () ->
+		console.log "demo"
 
 	$scope.content = content
 	return content
@@ -355,6 +338,7 @@ usersCtrl = app.controller("usersCtrl", ["Jsonp", "$scope", "$rootScope", "$loca
 	users.j = Jsonp
 	
 	users.formChecked = false
+
 	
 	users.submitForm = (url, form, method, event) ->
 		if form.$invalid
@@ -362,7 +346,23 @@ usersCtrl = app.controller("usersCtrl", ["Jsonp", "$scope", "$rootScope", "$loca
 			event.preventDefault()
 			false
 		else
-			true
+			event.preventDefault()
+			u = users.j.vs.view.data.main.pack
+			fd = new FormData()
+			fd.append("user[id]", u.id)
+			fd.append("user[name]", u.name)
+			fd.append("user[email]", u.email)
+			fd.append("user[phone]", u.phone )
+			fd.append("user[login]", u.login)
+
+			fd.append("user[password]", users.j.vs.view.data.password )
+			fd.append("user[password_confirmation]", users.j.vs.view.data.password_confirmation)
+			fd.append("user[avatar]", users.j.vs.view.data.files[0] ) if users.j.vs.view.data.files? && users.j.vs.view.data.files.length>0
+
+			console.log(".....users.submitForm() : FormData() -> fd = ", fd)
+			config = {method: method, url: url, data: fd, headers: {'Content-Type': undefined}, transformRequest: angular.identity }
+			users.j.http(config)
+
 
 	users.fetchErrors = () ->
 		if users.j.vs.view.data.main.pack.extra && users.j.vs.view.data.main.pack.extra.errors
@@ -380,6 +380,22 @@ usersCtrl = app.controller("usersCtrl", ["Jsonp", "$scope", "$rootScope", "$loca
 			# create#POST & index#GET
 			else "/users"
 
+	users.relates = (code) ->
+		switch code
+			when 4 then "Own"
+			when 3 then "Friended"
+			when 2 then "Pending"
+			when 1 then "Request"
+			when -1 then "Blocked"
+			else "Stranger"
+
+	users.showValue = (field) ->
+		if field? then field else "-----"
+
+
+
+
+
 	console.log "---- usersCtrl.end"	
 	users
 ])
@@ -391,9 +407,10 @@ sessionsCtrl = app.controller("sessionsCtrl", ["Jsonp", (Jsonp) ->
 	sessions.data = {}
 	console.log "---- sessionsCtrl.init"
 
-	sessions.submitForm = (url, form, event) ->
+	sessions.submitForm = (url, form, method, event) ->
 		event.preventDefault()
-		sessions.j.postForm( url, "POST", sessions.data)
+		config = { method: method, url: url, data: sessions.data }
+		sessions.j.http(config)
 
 	sessions
 ])
@@ -428,12 +445,20 @@ postsCtrl = app.controller("postsCtrl", ["Jsonp", (Jsonp) ->
 ])
 
 
-
+app.directive "upload", ["$parse", "ViewService", ($parse, ViewService) ->
+	restrict: "A",
+	link: (scope, elem, attrs) ->
+		# elem.bind("change", () -> 
+		elem.on("change", () -> 
+			$parse(attrs.upload).assign(ViewService.view.data, elem[0].files )
+			scope.$apply
+			console.log("------ #upload : ......" , ViewService.view.data)
+		)
+]
 
 app.directive "scrolling", [ "$window", ($window) ->
 	restrict: "A",
 	link: (scope, elem, attrs, event) ->
-		#		console.log " -----##          scrolling       ##-----"
 		footerHeight = 30
 		angular.element($window).on "scroll", (event) ->
 			if !scope.content.j.vs.view.data.paginate.loading &&
@@ -443,6 +468,15 @@ app.directive "scrolling", [ "$window", ($window) ->
 				scope.$apply()
 ]
 
+app.directive "ngMethod", ["Jsonp", (Jsonp) ->
+	restrict: "A"
+	link: (scope, elem, attrs, event) ->
+		elem.on "click", ( event) ->
+			event.preventDefault()
+			config = {method: attrs.ngMethod, url: attrs.href}
+			config.headers = {'Content-Type': 'application/json;charset=utf-8'} if attrs.ngMethod == 'patch'
+			Jsonp.http(config)
+]
 
 
 app.directive "stations", () ->
@@ -455,7 +489,7 @@ app.directive "stations", () ->
 app.directive "details", ($animate, $compile) ->
 	restrict: "A",
 	link: (scope, elem, attrs, events) ->
-		elem.on 'click', (event) =>
+		elem.on 'click', (event) ->
 			cell = elem.parent().parent()
 			slide = cell.children().first().next()
 			console.log("---- details: " + attrs.details)

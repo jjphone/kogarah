@@ -1,7 +1,7 @@
 class User < ActiveRecord::Base
 	has_many :posts, 			dependent: :destroy
-	has_many :relationships, 	dependent: :destroy
-	has_many :reverse_relationships, dependent: :destroy
+	has_many :relationships, 	dependent: :destroy, foreign_key: "user_id"
+	has_many :ties, dependent: :destroy, class_name: "Relationship", foreign_key: "friend_id"
 	has_many :others, 			through: :relationships, source: :friend_id
 	# , -> { where ("relationships.status=3") }
 
@@ -57,7 +57,7 @@ class User < ActiveRecord::Base
 
 	after_validation { self.errors.messages.delete(:password_digest) }
 
-
+	ADMIN	= 6
 	ALIAS 	= 5
 	OWN 	= 4
 	FRIEND 	= 3
@@ -65,17 +65,33 @@ class User < ActiveRecord::Base
 	REQUEST	= 1
 	STRANGER = 0
 	BLOCKED	= -1
+	UNKNOWN = -5
 
 
-	def to_h(extra = nil)
-		return { id: id, name: name, login: login, email: email, phone: phone, avatar_url: avatar.url, extra: extra}
+	def to_h(extra, level)
+		if unrestrict?(level)
+			{ id: id, name: name, login: login, email: email, phone: phone, avatar_url: avatar.url, extra: extra}
+		else
+			{ id: id, name: name, login: login,  avatar_url: avatar.url, extra: extra}
+		end
 	end
-	
+
+	def to_view_main_h(extra, level)
+		{type: "user", pack: self.to_h(extra, level) }
+	end
+
+	def errors_h
+		{errors: self.errors.messages}
+	end
+
 	def to_slug
 		# login ?	"/u/#{login}" : "/users/#{id}"
 		"/users/#{id}"
 	end
 
+	def self.includes_tie(owner, condition)
+		User.includes(:ties).where(relationships: {user_id: [owner, nil]}).where(condition)
+	end
 
 	def User.new_remember_token
 		begin 
@@ -94,8 +110,8 @@ class User < ActiveRecord::Base
 
 	def set_relation_with(other_id, action, nick)
 		return OWN if other_id == id
+		#cant use find_or_create_by, final status unknown
 		relation = Relationship.new(user_id: id, friend_id: other_id) unless relation = Relationship.relates(id, other_id)
-
 		case action
 		when ALIAS
 			relation.set_alias(nick)
@@ -113,6 +129,10 @@ class User < ActiveRecord::Base
 
 
 private
+
+	def unrestrict?(level)
+		[ADMIN, OWN, FRIEND, UNKNOWN].include? level
+	end
 
 	def create_remember_token
 		self.remember_token = User.digest(User.new_remember_token)

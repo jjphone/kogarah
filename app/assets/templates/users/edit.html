@@ -12,13 +12,14 @@
 					<input name="authenticity_token" type="hidden" ng-value="content.j.vs.token" />
 				</div>
 
-				<ng-include class="fields" src="'/assets/users/fields.html'"></ng-include>
+				<ng-include class="fields" src="'/assets/users/fields.html'"  ></ng-include>
 
 				<hr class="submit" />
 				<div class="submit-buttons">
 					<div><ul class="small-block-grid-2">
-						<li>
-							<input name="commit" type="submit" value="Update" ng-click="users.submitForm(users.user_paths(users.j.vs.view.data.main.pack.id, 'update'), profile, 'PATCH', $event)" /></li>
+						
+							<li><input name="commit" type="submit" value="Update" ng-click="users.submitForm( users.user_paths(users.j.vs.view.data.main.pack.id, 'update'), profile, 'PATCH', $event )"  /></li>
+
 						<li><button type="reset">Reset</button></li>
 					</ul></div>
 				</div>

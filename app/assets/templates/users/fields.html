@@ -1,6 +1,3 @@
-
-
-
 <div>
 	<div><label for="name">Name</label></div>
 	<div><input id="name" name="user[name]" type="text" ng-model="users.j.vs.view.data.main.pack.name" ng-minlength="6" ng-maxlength="50"  /></div>
@@ -36,12 +33,20 @@
 	<span class="ng-errors" ng-if="users.formChecked && profile['user[login]'].$error.pattern">Only allow a-z,0-9 and &#x27;-&#x27; once within the login</span>
 </div>
 <div>
-	<div><label for="avatar">Upload photo</label></div>
-	<div class="avatar_upload"><input id="avatar" name="user[avatar]" type="file" ng-model="users.j.vs.view.data.main.pack.avatar" /></div>
+	<div><label for="avatar">Avatar</label></div>
+	
+	<div class="fields">
+		<div>
+			<div style="margin-right: 10px;"><img class="avatar" ng-src="{{users.j.vs.view.data.main.pack.avatar_url}}" /></div>
+			<div class="avatar_upload">Upload New Image	<input id="avatar" type="file" upload="files" name="user[avatar]" /> </div>
+		</div>
+	</div>
+
+	
 </div>
 <div>
 	<div><label for="password" >Password</label></div>
-	<div><input id="password" name="user[password]" type="password" ng-model="users.j.vs.view.data.main.pack.password" ng-minlength="6" ng-maxlength="30" /></div>
+	<div><input id="password" name="user[password]" type="password" ng-model="users.j.vs.view.data.password" ng-minlength="6" ng-maxlength="30" /></div>
 
 	<span class="ng-errors" ng-if="users.formChecked && profile['user[password]'].$error.minlength">min 6 chars</span>
 	<span class="ng-errors" ng-if="users.formChecked && profile['user[password]'].$error.maxlength">max 30 chars</span>
@@ -49,8 +54,10 @@
 
 <div >
 	<div><label for="confirm">Retype password</label></div>
-	<div class="retype_pwd"><input id="confirm" name="user[password_confirmation]" type="password" ng-model="users.j.vs.view.data.main.pack.password_confirmation"  /></div>
+	<div class="retype_pwd"><input id="confirm" name="user[password_confirmation]" type="password" ng-model="users.j.vs.view.data.password_confirmation"  /></div>
 
 	<span class="ng-errors" ng-if="users.formChecked && profile['user[password_confirmation]'].$invalid">Need to match password</span>
 </div>
+<div>
+
 

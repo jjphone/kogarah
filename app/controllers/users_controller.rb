@@ -6,53 +6,48 @@ class UsersController < ApplicationController
 	before_action :auth_user, 		only: [:edit, :update, :destroy]
 
 	def index
-		Rails.logger.debug "------ User#index"
-		users = User.paginate(page: params[:page])
+		#users = User.includes(:ties).where(relationships: {user_id: [current_user.id, nil]}).where("users.id <> ?", current_user.id).paginate(page: params[:page])
+		users = User.includes_tie(current_user.id, ["users.id <> ?", current_user.id] ).paginate(page: params[:page])
 		list_users("/users", user_html("index"), users, "/users", nil )
 		renderView
 	end
 
 	def show
-		Rails.logger.debug "------ Users#show"
-		@user = User.find_by_id(params[:id] )
-		if @user 
-			show_user(current_user.id, request.fullpath, user_html("show"), flash.to_hash )
+		@user = User.find_by_id(params[:id])
+		if @user
+			user_show(@user.to_slug, flash.to_hash)
 			renderView
 		else	#render users - list
 			flashs = { error: "Invalid user id : #{params[:id].to_i}" }
-			users = User.paginate(page: params[:page])
-			list_users("/users", user_html("index"), users, "/users", flashs )
-			renderViewWithURL(4, nil)
+			user_list_page(flashs)
 		end
 	end
 
 	def edit
-		Rails.logger.debug "------ Users#Edit"
-		#before action auth_user
-		if @view # insufficient priviledge
+		if @view 
+			# insufficient priviledge by :auth_user
 			renderViewWithURL(4, nil)
 		else  
-			@view = createView(request.fullpath, user_html("edit"), nil, flash.to_hash )
-			@view.user_main(@user)
+			@view = createView(request.fullpath, user_html("edit"), site_title(@user.name), flash.to_hash)
+			#after auth_user, @user either admin or own
+			@view.main = @user.to_view_main_h(nil, -5)
 			renderView
 		end
 	end
 
 
 	def update
-		Rails.logger.debug "------ User#Update - find_by_id" 
-		#auth_user
 		if @view #insufficient priviledge
 			renderViewWithURL(4,nil)
 		else
 			if @user.update(user_params("edit"))
-				flashs = {success: "User profile updated"}
 				@user.reload
-				show_user(@user.id, "/users/#{@user.id}", user_html("show"), flashs)
-			else
+				flashs = {success: "User profile updated"}
+				user_show(@user.to_slug, flashs)
+			else	#error, back to edit page
 				flashs = {error: "Can't update profile"}
-				@view = createView("#{@user.to_slug}/edit", user_html("edit"), nil, flashs )
-				@view.user_main(@user)
+				@view = createView("#{@user.to_slug}/edit", user_html("edit"), site_title(@user.name), flashs )
+				@view.main = @user.to_view_main_h( @user.errors_h, -5 )
 			end
 			renderViewWithURL(4,"update.js.erb")
 		end
@@ -60,24 +55,22 @@ class UsersController < ApplicationController
 
 
 	def new 
-		Rails.logger.debug "------ User#New"
 		@view = createView("/users/new", user_html("new"), "Trainbuddy | new",  flash.to_hash )
-		@view.main = {type: "user", pack: User.new.to_h}
+		@view.main = User.new.to_view_main_h(nil, 4)
 		renderView
 	end
 
 	def create
-		Rails.logger.debug "------   User#Create"
 		@user = User.new(user_params("create"))	
 		if @user.save
-			flashs = {success: "User created"}
 			@user.reload
 			sign_in @user
-			show_user(@user.id, @user.to_slug, user_html("show"), flashs )
-		else
+			flashs = {success: "User created"}
+			user_show(@user.to_slug, flashs)
+		else #error, back to new page
 			flashs = {error: "User can't be created"}
 			@view = createView("/users/new", user_html("new"), "Trainbuddy | new",  flashs)
-			@view.user_main(@user)
+			@view.main = @user.to_view_main_h(@user.errors_h, 4)
 		end
 		renderViewWithURL(4,"update.js.erb" )
 	end

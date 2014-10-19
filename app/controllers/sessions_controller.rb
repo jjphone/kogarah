@@ -1,13 +1,10 @@
 class SessionsController < ApplicationController
 	def new 
-		Rails.logger.debug "----- Sessions#new"
 		@view = createView(signin_path, session_html("new"), 'Trainbuddy | Login', flash.to_hash  )
-		flash.clear
 		renderView
 	end
 
 	def create
-		Rails.logger.debug "----- Sessions#create"
 		user = User.find_by(email: params[:session][:email].downcase)
 		if user && user.authenticate(params[:session][:password])
 			flashs = {info: "User login"}
@@ -18,13 +15,11 @@ class SessionsController < ApplicationController
 			@view = createView("/signin?login=error", session_html("new"), 'Trainbuddy | Login - Error', flash.to_hash  )
 			renderViewWithURL(4, nil)
 		end
-		flash.clear
 		# Rails.logger.debug @view.inspect
 	end
 
 	def destroy
-		Rails.logger.debug "----- Sessions#destroy"
-		sign_out
+		sign_out if signed_in?
 		redirect_format(root_url, {info: "User logout."}, params[:callback] )
 	end
 

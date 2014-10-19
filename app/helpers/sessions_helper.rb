@@ -14,9 +14,6 @@ module SessionsHelper
     	self.current_user = user
 	end
 
-
-
-
 	def sign_out 
 		#update_attribute bypass password validation
 		if current_user
@@ -62,11 +59,9 @@ module SessionsHelper
 		if @user 
 			if current_user? @user 
 				@view = nil
-			else
-				#show @user 
-				flash.clear
+			else	#show @user 
 				flashs = { error: "Insufficient priviledge on @#{@user.login}" }
-				show_user(current_user.id, @user.to_slug, user_html("show"), flashs )
+				user_show(@user.to_slug, flashs)
 			end
 		else
 			flashs = { error: "Invalid user id : #{params[:id].to_i}" }

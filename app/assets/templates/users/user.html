@@ -1,16 +1,12 @@
 <div class="user" id="paginate_{{user.id}}">
 	<a ng-href="/users/{{user.id}}">
 		<div>
-			<div>
-				<div><img ng-src="{{user.avatar_url}}" /></div>
-				<div><h6>{{user.name}}</h6></div>
-			</div>
-			<div><b title="login">L</b> : @{{user.login}} </div>
-			<div><b title="alias">A</b> : Alias name</div>
-			<div><b title="phone">P</b> : {{user.phone}} </div>
-			<div><b title="email">E</b> : {{user.email}} </div>
-
-			<div class="rel"><b title="relation">R</b>: relation</div>
+			<div><div><img ng-src="{{user.avatar_url}}"/></div><div><h6>{{user.name}}</h6></div></div>
+			<div><div title="login">@ :</div><div>{{user.login}} </div></div>
+			<div><div title="alias">A :</div><div>{{user.extra.nick}} </div></div>
+			<div><div title="email">E :</div><div>{{users.showValue(user.email)}}</div></div>
+			<div><div title="phone">P :</div><div>{{users.showValue(user.phone)}}</div></div>
+			<div><div title="relates">R :</div><div>{{users.relates(user.extra.relates)}}</div></div>
 		</div>
 	</a>			
 </div><!-- content -->

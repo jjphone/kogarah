@@ -1,3 +1,8 @@
+img.avatar {
+	width: 40px; height:40px;
+	border: 1px solid #666; border-radius: 50%;
+}
+
 div.profile { 
 	margin-top: 1rem; margin-bottom: 20px; height: 2 * $cell-height !important;
 	@include cell-color(#ccc, #333, #999, transparent 50%, transparent 65%);
@@ -11,8 +16,11 @@ div.profile {
 
 h2.small-center { text-align:center; font-size:1.5em; line-height:110%;}
 
+div#user-info>hr{
+	margin: 0.8rem 0 0.9rem;
+}
 div#user-info>div{
-	margin-bottom: 0.75rem; 
+	margin-bottom: 0.3rem; 
 	>div>em{ color: #888; font-size: 0.9rem;}
 	>div:first-child { font-weight: bold; }
 	>div.portrait {
@@ -80,16 +88,14 @@ div.post, div.user>a {
 		>div {@extend .columns;}
 		>div:first-child { 	
 			@extend .small-3;
-			>img { 
-				width: 40px; height:40px; 
-				border: 1px solid #666; border-radius: 50%;
-			}
+			margin-bottom: 5px;
+			>img { @extend img.avatar;	}
 		}
 		>div:last-child { @extend .small-9; }
 	}
 	>div>div:not(:first-child) {
 		//@extend .red; 
-		margin-top:10px; font-size: 1.1rem;
+		font-size: 1rem; margin-top:5px;
 	}
 	>div>div.timestamp { //@extend .red;
 		font: 0.8rem/1rem Verdana, Geneva, sans-serif;
@@ -98,5 +104,26 @@ div.post, div.user>a {
 		>span { color: #777;}
 	}
 }
+div.user>a>div>div:not(:first-child)
+{	//@extend .red;
+	@extend .row;
+	>div {@extend .columns; }
+	>div:first-child
+	{ 	//@extend .yellow;
+
+		@extend .small-3;
+		text-align: right;
+		font-weight: 500;
+	}
+	>div:last-child
+	{	//@extend .blue;
+		@extend .small-9;
+	}
+
+}
+
 div.users>div:hover { background: aqua; }
+
+
+
 

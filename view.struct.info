@@ -1,0 +1,39 @@
+View
+
+Type 1:
+site_url
+syn_url
+
+Type 2:
+source
+title
+template
+path
+
+Type 3:
+flash
+current_user
+
+Type 4:
+data
+
+View.path = { prev: <url>, current: <url> }
+View.flash = {info, error, success}
+
+
+View.data.main = {type, pack}
+
+View.data.paginate = {type, page, total, path, pack, loaded, ids }
+View.data.paginate.loaded = [1, 3, 4, 2] # pages
+View.data.paginate.ids = [ 1, 24, 32, 16] # leading paginate ids
+
+View.data.links = {related, level}
+
+View.data.links.related = {link_name: url, ....}
+
+View.data.links.related = {link_name: {name, url, method}, ... }
+
+#View.data.links.level = {name: url, ....}
+View.data.links.level = {link_name: {name, url, method} , ....}
+
+

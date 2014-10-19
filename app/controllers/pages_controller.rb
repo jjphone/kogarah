@@ -1,5 +1,4 @@
 class PagesController < ApplicationController
-	
 
 	def about
 		#flash = {error: "error-message", success: "success-message"}
@@ -19,8 +18,6 @@ class PagesController < ApplicationController
 		#msg = {error: "error-message", success: "success-message", info: "info-message"}
 		msg = nil
 		@view = createView("/help", asset_path("/pages/help.html"), "Trainbuddy | Help", flash.to_hash )
-		@view.data = request.fullpath
-
 		renderView
 	end
 

@@ -56,18 +56,13 @@ class Relationship < ActiveRecord::Base
 			case o_relation.status
 			when FRIEND
 				update_relation_with(FRIEND, nick)
-				FRIEND
 			when BLOCKED
 				update_relation_with(REQUEST, nick)
-				REQUEST
 			when REQUEST
-				update_relation_with(FRIEND, nick)
-				o_relation.update_relation_with(FRIEND,nil)
-				FRIEND
+				update_relation_with(FRIEND, nick) && o_relation.update_relation_with(FRIEND,nil)
 			when PENDING
-				o_relation.touch
+				o_relation.touch 
 				update_relation_with(REQUEST, nil)
-				REQUEST
 			end
 		else
 			create_relation(friend_id, nick)
@@ -82,18 +77,13 @@ class Relationship < ActiveRecord::Base
 			case o_relation.status
 			when BLOCKED
 				update_relation_with(REQUEST, nick)
-				REQUEST
 			when REQUEST
-				update_relation_with(FRIEND, nick)
-				o_relation.update_relation_with(FRIEND, nil)
-				FRIEND
+				update_relation_with(FRIEND, nick) && o_relation.update_relation_with(FRIEND, nil)
 			when PENDING
 				o_relation.touch
 				update_relation_with(REQUEST, nick)
-				REQUEST
 			when FRIEND
 				update_relation_with(FRIEND, nick)
-				FRIEND
 			end
 		else
 			create_relation(friend_id, nick)
@@ -104,9 +94,8 @@ class Relationship < ActiveRecord::Base
 		if User.find_by_id(other_id)
 			o_relation = Relationship.create!(user_id: other_id, friend_id: user_id, status: PENDING)
 			update_relation_with(REQUEST, nick)
-			REQUEST
 		else
-			return -2
+			false
 		end
 	end
 
@@ -115,21 +104,18 @@ class Relationship < ActiveRecord::Base
 		o_relation = Relationship.relates(friend_id, user_id)
 		o_relation.destroy if o_relation && o_relation.status != BLOCKED
 		destroy
-		STRANGER
 	end
 
 	def block(nick)
 		if status == BLOCKED
 			destroy
-			STRANGER
 		else
 			update_relation_with(BLOCKED, nick)
-			BLOCKED
 		end
 	end
 
 	def set_alias(nick)
-		update_relation_with(self.status, nick)? ALIAS : -2
+		update_relation_with(self.status, nick)
 	end
 
 	def update_relation_with(status, nick)

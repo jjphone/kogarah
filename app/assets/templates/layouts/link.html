@@ -1,0 +1,4 @@
+<div ng-switch="link.method">
+	<a ng-if="link.method&&link.method!='get'" ng-href="{{link.url}}" ng-method="{{link.method}}" >{{link.name|capitalize}}</a>
+	<a ng-if="!link.method||link.method=='get'" ng-href="{{link.url}}">{{link.name|capitalize}}</a>
+</div>

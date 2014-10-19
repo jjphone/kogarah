@@ -35,15 +35,10 @@ class View
 	end
 
 	def paginates(type, path, obj, json_hash)
+		Rails.logger.debug "View.paginates : path = " + path
 		p = {type: type, page: obj.current_page.to_i, total: obj.total_pages, path: path, loading: false, pack: nil}
 		p[:pack] = json_hash if obj.size > 0
 		self.data.merge!( {paginate: p} )
-	end
-
-	def user_main(user)
-		self.title ||= "Trainbuddy | #{user.name}"
-		self.main = {type: "user", pack: user.errors.count>0 ? user.to_h({errors: user.errors.messages}) : user.to_h(nil) }
-		self
 	end
 
 	def persisted?
