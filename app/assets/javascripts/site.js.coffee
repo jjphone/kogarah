@@ -57,12 +57,21 @@ app.config(["$routeProvider", '$locationProvider', ($routeProvider, $locationPro
 		templateUrl:  "/assets/layouts/ngView.html",
 		resolve: {load: loadView},
 		controller: "sessionsCtrl", controllerAs: "sessions"
+
+	}).when("/chats", {
+		templateUrl:  "/assets/layouts/ngView.html",
+		resolve: { load: loadView },
+		controller: "chatsCtrl", controllerAs: "chats"
+
+	}).when("/search", {
+		templateUrl:  "/assets/layouts/ngView.html",
+		resolve: { load: loadView },
+		controller: "searchCtrl", controllerAs: "search"
 	
 	}).when("/", {
 		templateUrl:  "/assets/layouts/ngView.html",
 		resolve: { load: loadView },
-		controller: "pageCtrl", controllerAs: "pages"
-		
+		controller: "pageCtrl", controllerAs: "pages"	
 	})
 
 	
@@ -392,10 +401,6 @@ usersCtrl = app.controller("usersCtrl", ["Jsonp", "$scope", "$rootScope", "$loca
 	users.showValue = (field) ->
 		if field? then field else "-----"
 
-
-
-
-
 	console.log "---- usersCtrl.end"	
 	users
 ])
@@ -411,8 +416,18 @@ sessionsCtrl = app.controller("sessionsCtrl", ["Jsonp", (Jsonp) ->
 		event.preventDefault()
 		config = { method: method, url: url, data: sessions.data }
 		sessions.j.http(config)
-
 	sessions
+])
+
+searchsCtrl = app.controller("searchsCtrl",["Jsonp", (Jsonp) -> 
+])
+
+chatsCtrl = app.controller("chatsCtrl", ["Jsonp", (Jsonp) -> 
+	chats = this
+	chats.j = Jsonp
+	console.log "------- Chats init"
+
+	chats
 ])
 
 

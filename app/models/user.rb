@@ -1,8 +1,13 @@
 class User < ActiveRecord::Base
+	
 	has_many :posts, 			dependent: :destroy
 	has_many :relationships, 	dependent: :destroy, foreign_key: "user_id"
 	has_many :ties, dependent: :destroy, class_name: "Relationship", foreign_key: "friend_id"
-	has_many :others, 			through: :relationships, source: :friend_id
+	has_many :others, 			through: :relationships, source: :friend
+
+	has_many :talkers, 			dependent: :destroy
+	has_many :chats,			through: :talkers, source: :chat
+
 	# , -> { where ("relationships.status=3") }
 
 	has_attached_file :avatar, :styles => { :medium => "150x150", :thumb => "50x50#" }, 
@@ -65,11 +70,12 @@ class User < ActiveRecord::Base
 	REQUEST	= 1
 	STRANGER = 0
 	BLOCKED	= -1
-	UNKNOWN = -5
+	LIMITED = -2
+	ALLOWED = -5
 
 
 	def to_h(extra, level)
-		if unrestrict?(level)
+		if authorize?(level)
 			{ id: id, name: name, login: login, email: email, phone: phone, avatar_url: avatar.url, extra: extra}
 		else
 			{ id: id, name: name, login: login,  avatar_url: avatar.url, extra: extra}
@@ -90,7 +96,7 @@ class User < ActiveRecord::Base
 	end
 
 	def self.includes_tie(owner, condition)
-		User.includes(:ties).where(relationships: {user_id: [owner, nil]}).where(condition)
+		User.includes(:ties).where!(relationships: {user_id: [owner, nil]}).where!(condition);
 	end
 
 	def User.new_remember_token
@@ -130,8 +136,8 @@ class User < ActiveRecord::Base
 
 private
 
-	def unrestrict?(level)
-		[ADMIN, OWN, FRIEND, UNKNOWN].include? level
+	def authorize?(level)
+		[ADMIN, OWN, FRIEND, ALLOWED].include? level
 	end
 
 	def create_remember_token

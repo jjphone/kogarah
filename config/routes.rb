@@ -1,12 +1,18 @@
 Rails.application.routes.draw do
 
 
+  get 'search/index'
+
   resources :users
   resources :sessions,        only: [:new, :create, :destroy]
   resources :relationships,   only: [:update]
+  get '/search',    to: "search#index"
+  
   # resources :relationships, only: [:index ] do
   #  # put :update, on: :collection
   # end
+
+  resources :chats,           except: [:edit]
 
   get 'pages/about'
   get '/about',     to: "pages#about"

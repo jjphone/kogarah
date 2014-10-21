@@ -11,10 +11,32 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20140806053444) do
+ActiveRecord::Schema.define(version: 20141020032404) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
+
+  create_table "chats", force: true do |t|
+    t.integer  "active",       default: 1
+    t.integer  "user_id",                  null: false
+    t.string   "display"
+    t.integer  "last_message"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
+
+  create_table "messages", force: true do |t|
+    t.integer  "user_id",                null: false
+    t.integer  "chat_id",                null: false
+    t.integer  "active",     default: 1
+    t.string   "content"
+    t.string   "extra"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
+
+  add_index "messages", ["chat_id", "active"], name: "index_messages_on_chat_id_and_active", using: :btree
+  add_index "messages", ["user_id", "chat_id"], name: "index_messages_on_user_id_and_chat_id", unique: true, using: :btree
 
   create_table "posts", force: true do |t|
     t.integer  "user_id"
@@ -43,6 +65,17 @@ ActiveRecord::Schema.define(version: 20140806053444) do
   add_index "relationships", ["friend_id"], name: "index_relationships_on_friend_id", using: :btree
   add_index "relationships", ["user_id", "friend_id"], name: "index_relationships_on_user_id_and_friend_id", unique: true, using: :btree
   add_index "relationships", ["user_id"], name: "index_relationships_on_user_id", using: :btree
+
+  create_table "talkers", force: true do |t|
+    t.integer  "user_id",                null: false
+    t.integer  "chat_id",                null: false
+    t.integer  "active",     default: 1
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
+
+  add_index "talkers", ["user_id", "active"], name: "index_talkers_on_user_id_and_active", using: :btree
+  add_index "talkers", ["user_id", "chat_id"], name: "index_talkers_on_user_id_and_chat_id", unique: true, using: :btree
 
   create_table "users", force: true do |t|
     t.string   "name"

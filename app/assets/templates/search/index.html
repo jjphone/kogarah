@@ -1,14 +1,9 @@
-<%= provide :title, 'About' %>
-
-
 <div class="top-row">
 
 	<div>
-		<div><h1>Pages#about</h1>
-			<p>Find me in app/views/pages/about.html.erb</p>
-			<p>1 + 1 = {{1 + 1 }} </p>
-			<p>test =  {{content.data.values.test}}</p>
-			<p>topbar.page.url = {{content.topbar.page.url}}</p>
+		<div><h1>Search</h1>			
+			{{content.j.vs.view}}
+			
 			<div class="draw" details="add" title="more"><i></i></div> 
 		</div>
 
@@ -19,7 +14,22 @@
 
 	<div>
 		<div> #details=show#
-		<pre>app.flash = {{ app.flash }}</pre>
+			<ul>
+				<li><a ng-href="/users">Ng-HREF /users</a></li>
+				<li><a href="/home">Normal Href link</a></li>
+				<li><a>Update User1 relation -> Block</a></li>
+
+				<li><a href="/relationships/2?o=2&amp;op=0&amp;ptype=21" data-method="put" data-remote="true" rel="nofollow" class="">un-Friend - put - remote</a></li>
+
+				<li><a href="/relationships/2?o=2&amp;op=0&amp;ptype=21" data-method="put"  rel="nofollow" class="">un-Friend - put</a></li>
+
+				<li><a href="/relationships/2?o=2&amp;op=0&amp;ptype=21"  rel="nofollow" class="">un-Friend - index</a></li>
+				
+
+				
+
+
+			</ul>
 			<div class="draw" details="show" title="more"><i></i></div>
 		</div>
 
@@ -62,14 +72,20 @@
 	</div>
 
 	<div>
+
 		<div>this is 3rd cell - details#show
 			<div class="draw" details="show" title="more"><i></i></div>
 		</div>
+		
+		
+
 		<div class="slide">
 			<div>Action :: 3rd cell #details=show#  xxxx</div>
 			
 			<div class="bg"></div>
 		</div>
+
+		<div class="orange-tag"></div>
 		<div></div>
 	</div>
 
@@ -87,7 +103,7 @@
 
 
 <div class="main">
-	<div>
+	<div> 
 		<div>This is #details=show#
 			<div class="draw" details="show" title="more"><i></i></div>
 		</div>
@@ -99,18 +115,14 @@
 		</div>
 
 
-		<div class="blue-tag"></div>
+		<div class="blue-tag"></div> <!-- tag -->
 
 		<div></div>
-	</div>
+	</div> <!-- cell -->
 </div>
 
 <div class="red row">
-	<div class="columns small-1 lime"> 1</div>
-	<div class="columns small-2 lime"> 2</div>
+	<div class="columns small-3 lime"> 1</div>
+	<div class="columns small-3 lime"> 2</div>
 	<div class="columns small-3 lime"> 3</div>
-	<div class="columns small-4 lime">4</div>
-	<div class="columns small-2 lime">2</div>
 </div>
-
-
