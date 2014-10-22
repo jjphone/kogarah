@@ -1,5 +1,8 @@
 class SearchController < ApplicationController
-  def index
-  end
-  
+
+	include UsersHelper
+	
+	def index
+	end
+
 end

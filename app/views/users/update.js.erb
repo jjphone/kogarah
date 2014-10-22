@@ -1,7 +1,0 @@
-window.viewPreload = <%= @view.to_json.html_safe %>;
-contentCtrl = angular.element("html").controller();
-console.log(window.viewPreload);
-contentCtrl.updateLocation(window.viewPreload.path.current);
-contentCtrl.updatePage();
-usersCtrl = angular.element("ng-view").controller();
-usersCtrl.fetchErrors();

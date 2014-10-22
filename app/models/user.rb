@@ -106,6 +106,24 @@ class User < ActiveRecord::Base
 		remember_token
 	end
 
+	def self.search_for(user_id, term, phone, email, type)
+		sql = "select id from search_user_ids(?, ?, ?, ?, ?, 16)"
+		if [-1, 1, 2, 3].to_a.include? type
+			relation = type
+		else
+			relation = nil
+		end		
+		ids = User.find_by_sql([sql, user_id.to_i, term, phone, email, relation ]).map(&:id)
+		User.where("id in (?)", ids);
+	end
+
+	def search_shortcode(term)
+		blocked = relationships.where(status: -1).pluck(:friend_id).push(self.id).join(",")
+		sql = "select * from search_user_code(?, ?, ?, 10)"
+		User.find_by_sql([sql, self.id, term, blocked])
+	end
+
+
 	def User.digest(token)
 		Digest::SHA1.hexdigest(token.to_s)
 	end
@@ -131,7 +149,6 @@ class User < ActiveRecord::Base
 			relation.block(nick)
 		end
 	end
-
 
 
 private
