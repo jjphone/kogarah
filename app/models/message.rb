@@ -10,6 +10,9 @@ class Message < ActiveRecord::Base
 		self.active = nil
 	end
 
+	def reply(content, extra)
+	end
+
 	def to_h
 		{id: id, active: active, chat_id: chat_id, content: content, user: user_id, extra: extra}
 	end

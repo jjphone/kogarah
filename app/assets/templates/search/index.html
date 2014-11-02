@@ -1,10 +1,34 @@
-<div class="top-row">
-
+<div class="top-row" >
 	<div>
 		<div><h1>Search</h1>			
-			{{content.j.vs.view}}
-			
-			<div class="draw" details="add" title="more"><i></i></div> 
+			<form accept-charset="UTF-8" action="/search" method="get" name="lookup" id="lookup" >
+				<div class="hidden">
+					<input name="utf8" type="hidden" value="&#x2713;" />
+					<input name="authenticity_token" type="hidden" ng-value="content.j.vs.token" />
+				</div>
+				<div class="fields">
+					<div>
+						<div><label for="type">Type</label></div>
+						<div><input id="type" name="type" type="text" ng-model="content.j.vs.view.data.main.pack.type" /></div>	
+					</div>
+
+					<div>
+						<div><label for="term" >Term</label></div>
+						<div><input id="term" name="1" type="text" ng-model="content.j.vs.view.data.main.pack.term" /></div>
+					</div>
+				</div>
+				
+				<hr class="submit" />
+				<div class="submit-buttons small"><div><ul class="small-block-grid-2">
+					<li><input name="commit" type="submit" value="Find" 
+						ng-click="content.send($event, {url: '/search', method: 'get', params: content.formAddToken(content.j.vs.view.data.main.pack)} )" /></li>
+					<li><button type="reset">Reset</button></li>
+					
+				</div></ul></div>
+
+
+			</form>
+			<!-- <div class="draw" details="add" title="more"><i></i></div>  -->
 		</div>
 
 		<div></div> <!-- background-->
@@ -13,22 +37,11 @@
 
 
 	<div>
-		<div> #details=show#
+		<div>Search Result
 			<ul>
-				<li><a ng-href="/users">Ng-HREF /users</a></li>
-				<li><a href="/home">Normal Href link</a></li>
-				<li><a>Update User1 relation -> Block</a></li>
-
-				<li><a href="/relationships/2?o=2&amp;op=0&amp;ptype=21" data-method="put" data-remote="true" rel="nofollow" class="">un-Friend - put - remote</a></li>
-
-				<li><a href="/relationships/2?o=2&amp;op=0&amp;ptype=21" data-method="put"  rel="nofollow" class="">un-Friend - put</a></li>
-
-				<li><a href="/relationships/2?o=2&amp;op=0&amp;ptype=21"  rel="nofollow" class="">un-Friend - index</a></li>
-				
-
-				
-
-
+				<li>Type : {{content.j.vs.view.data.main.pack.type}}</li>
+				<li>Term : {{content.j.vs.view.data.main.pack.term}}</li>
+				<li>Size : {{content.j.vs.view.data.main.pack.result.length}}</li>
 			</ul>
 			<div class="draw" details="show" title="more"><i></i></div>
 		</div>
@@ -50,79 +63,7 @@
 
 
 
-
-<div class="main">
-	<div> <!-- cell -->
-		<div> This is  1st slide - #details=add#
-			<div class="draw" details="add" title="more"><i></i></div> 
-		</div><!-- content -->
-
-		<div class="blue-tag"></div> <!-- tag -->
-		<div></div> <!-- background -->
-	</div>
-
-
-
-	<div>
-		<div>this is 2nd cell - #details=add#
-			<div class="draw" details="add" title="more"><i></i></div>
-		</div>
-		<div class="orange-tag"></div>
-		<div></div>
-	</div>
-
-	<div>
-
-		<div>this is 3rd cell - details#show
-			<div class="draw" details="show" title="more"><i></i></div>
-		</div>
-		
-		
-
-		<div class="slide">
-			<div>Action :: 3rd cell #details=show#  xxxx</div>
-			
-			<div class="bg"></div>
-		</div>
-
-		<div class="orange-tag"></div>
-		<div></div>
-	</div>
-
-
-
-	<div>
-		<div>
-			this is 4th cell - #details=add#
-			<div class="draw" details="add" title="more"><i></i></div>
-		</div>
-
-		<div></div>
-	</div>
+<div class="main" id="results">
+	<div ng-repeat="record in content.j.vs.view.data.main.pack.result" ng-include="'/assets/search/record.html'"></div> <!-- cell -->
 </div>
 
-
-<div class="main">
-	<div> 
-		<div>This is #details=show#
-			<div class="draw" details="show" title="more"><i></i></div>
-		</div>
-		
-
-
-		<div class="slide">
-			<div>Action :: #details=show#  xxxx</div><div class="bg"></div>
-		</div>
-
-
-		<div class="blue-tag"></div> <!-- tag -->
-
-		<div></div>
-	</div> <!-- cell -->
-</div>
-
-<div class="red row">
-	<div class="columns small-3 lime"> 1</div>
-	<div class="columns small-3 lime"> 2</div>
-	<div class="columns small-3 lime"> 3</div>
-</div>

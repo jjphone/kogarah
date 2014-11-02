@@ -1,0 +1,60 @@
+<!-- view.data.main = {type: 'search', 
+	talks, 
+	ids: [{id:user.id, tag: user.tag}, .... ]
+	pack: {type: 'user', term, result: [ {id, name, pos, tag, type }, ... ],
+	message } }
+-->
+
+<form accept-charset="UTF-8"  method="post" name="chatNew" id="chatNew" >
+	<div class="hidden">
+		<input name="utf8" type="hidden" value="&#x2713;" />
+		<input name="authenticity_token" type="hidden" ng-value="chats.j.vs.token" />
+	</div>
+
+	<div id="toField" class="row collapse">
+		<div class="columns small-2 large-1">
+			<span class="prefix"><i></i><i></i></span>
+		</div>
+		<div class="columns small-10 large-10 end">
+			<input id="to" name="to" type="text" ng-model="chats.j.vs.view.data.main.talkers" ng-change="chats.userLookup()" />
+
+			<ul class="autocomplete to" ng-if="chats.j.vs.view.data.main.type=='search'" ng-cloak>
+				<li ng-repeat="tag in (chats.j.vs.view.data.main.pack.result) | limitTo: 5" ng-click="chats.addUser(tag)">
+					<div ng-bind-html="chats.mark(1, tag.type, tag.tag, tag.pos)"></div>
+					<span ng-bind-html="chats.mark(3, tag.type, tag.name, tag.pos)"></span>
+				</li>
+				<li class="none" ng-if="chats.j.vs.view.data.main.pack.result.length<1">No match found - {{chats.j.vs.view.data.main.pack.result.length}}</li>
+		</div>
+	</div>
+	<div id="toIDs">
+		<div> 
+			<ul >
+				<li ng-repeat="user in chats.j.vs.view.data.main.ids" ng-click="chats.removeUser($index)">
+					{{$index}}: {{user.tag}}<a>x</a>
+				</li>
+			</ul>
+		</div>
+	</div>
+
+	<div class="row">
+		<div id="msg-content"><textarea id="message" name="message" ng-model="chats.j.vs.view.data.main.message"></textarea></div>
+	</div>
+
+	<div class="row"> <div class="left-11"><hr class="submit narrow" /></div> </div>
+
+	<div class="right-11-buttons" >
+		<div>
+			<ul class="button-pair">
+				<li><input name="commit" type="submit" value="Send" 
+				ng-click="chats.sendMsg('/chats', chatNew, 'post', $event )"/></li>
+				<li><button type="reset" >Reset</button></li>
+				<!-- <a href="#" class="button secondary   tiny">Button 2</a></li> -->
+			</ul>		
+
+		</div>
+	</div>
+
+
+
+
+</form>

@@ -21,6 +21,7 @@
 //= require angular-route
 //= require angular-animate
 //= require ng-rails-csrf
+//= require angular-sanitize
 //= require site
 //require_tree ../angular
 $(function(){ $(document).foundation(); });

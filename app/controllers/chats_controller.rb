@@ -3,18 +3,17 @@ class ChatsController < ApplicationController
 	before_action :signed_in_user
 
 	def index
-		#paginate cant cache complex join + include ???
-		chats = current_user.chats.includes(:latest).where("chats.active=1").paginate(page: params[:page])
-		json = chats.map { |c|
-			users = c.users.map{ |u|
-				u.to_h(nil, -2)
-			}
-			c.to_h({message: c.latest.to_h, talkers: users} )
+		#get list of talkers of the current user for compare updated_at
+		talkers = Talker.where({user_id: current_user.id, active: 1}).includes(chat: [:latest]).paginate(page: params[:page] )
+		json = talkers.map{ |t|
+			c = t.chat
+			c.to_h( {message: c.latest.to_h, read: t.after?(c.updated_at) } )
 		}
 		flashs = nil
 		@view = createView("/chats", chat_html("index"), "Trainbuddy | Chats", flashs)
-		@view.paginates("chats", "/chats", chats, json)
+		@view.paginates("chats", "/chats", talkers, json)
 		renderView
+
 	end
 
 	def show
@@ -24,6 +23,10 @@ class ChatsController < ApplicationController
 	end
 
 	def create
+		message = params[:content]
+		to = params[:to]
+		chat = Chat.create_new(current_user.id, to, content, nil)
+
 	end
 
 	def update

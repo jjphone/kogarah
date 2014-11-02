@@ -1,3 +1,71 @@
-// Place all the styles related to the Chats controller here.
-// They will automatically be included in application.css.
-// You can use Sass (SCSS) here: http://sass-lang.com/
+div#toField>div { margin:0; padding: 0 auto; }
+div#toField>div>input#to { margin:0 auto 5px; padding: 0 auto; }
+div#toField>div>span.prefix{
+	>i:first-child 	{ @extend .fi-torsos-male-female;}
+	>i:last-child 	{ @extend .fi-plus;}
+}
+
+div.left-11 { @extend .columns; @extend .small-12; @extend .large-11; @extend .end; }
+
+.zero-v-gap {
+	margin: 0 auto; padding: 0 auto;
+}
+
+
+div#toIDs {
+	@extend .rows;
+	>div { @extend .red;
+		@extend .left-11; 
+		>ul { max-height: 3rem; overflow: auto; @extend .zero-v-gap; }
+		>ul>li {
+			@extend .label; @extend .tiny; @extend .radius; @extend .secondary;
+			@include transparent-ratio(90); display: inline-block; 
+			margin: 0 3px 5px; padding: 3px; color: $set1-prime;
+			cursor: hand;
+		}
+		>ul>li>a{ @extend .close; vertical-align:super; margin: 0 3px 0 5px;}
+	}
+}
+
+div#msg-content {
+	@extend .left-11; 
+	>textarea{ @extend .zero-v-gap; resize: none; height:60px; }
+}
+
+
+
+.button-pair {	
+	@extend .button-group; 
+	@extend .radius; @extend .even-2;
+	>li>input, >li>button { @extend .button; @extend .tiny; @extend .zero-v-gap; }
+	>li>button { @extend .secondary;}
+}
+
+.right-11-buttons{
+	@extend row;
+	>div { 
+		@extend .columns; 
+		@extend .small-8; @extend .small-push-4;
+		@extend .large-6; @extend .large-push-5;
+	}
+}
+
+ul.autocomplete
+{	@extend .red;
+	width: 100%; margin:0 ; padding:0; border: 1px solid #999;
+	list-style: none; color: $set1-light-B;
+	position: absolute; z-index: 2;
+	@include transparent-ratio(85);
+
+	>li {
+		display:block; margin: 0; padding: 5px; border-top: 1px solid #ddd; background: #555;
+		b { color: $set1-prime;}
+	}
+	>li.ng-scope:hover, >li.ng-scope:focus, {	
+		background: $set1-prime; 
+		color:white; 
+		cursor: pointer;
+		b { color: $set1-dark-B;  }
+	}
+	>li.none { color: #888;  }
+}

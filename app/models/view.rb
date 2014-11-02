@@ -1,7 +1,7 @@
 
 class View
 	include ActiveModel::Model
-	attr_accessor :source, :site_url, :title, :path, :flash, :current_user, :template, :data, :syn_url
+	attr_accessor :source, :site_url, :title, :path, :flash, :current_user, :template, :data, :syn_url, :done
 
 	def initialize(obj)
 		self.path = obj[:path]
@@ -10,8 +10,10 @@ class View
 		self.template = obj[:template]
 		self.title = obj[:title]
 
+		self.done = false
 		self.syn_url = false
 		self.data = {main: nil, paginate: nil, links: nil}
+
 	end
 
 	def main=(obj)

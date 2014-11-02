@@ -34,9 +34,9 @@
 </div>
 
 
-<div class="main last" ng-if="!(content.j.vs.view.data.paginate && content.j.vs.view.data.paginate.pack)" ng-include="'/assets/users/no_user.html'"> </div>
+<div class="main last" ng-if="!(content.j.vs.view.data.paginate && content.j.vs.view.data.paginate.pack)" ng-include="'/assets/layouts/no_record.html'" ng-cloak> </div>
 
-<div class="main last users" ng-if="(content.j.vs.view.data.paginate && content.j.vs.view.data.paginate.pack)" id="page1" >
+<div class="main last users" ng-if="(content.j.vs.view.data.paginate && content.j.vs.view.data.paginate.pack)" id="page1" ng-cloak>
 	<div ng-repeat="user in content.j.vs.view.data.paginate.pack" ng-include="'/assets/users/user.html'"></div>
-	<span id="loading" ng-show="content.j.vs.view.data.paginate.page<content.j.vs.view.data.paginate.total" scrolling ><a>Loading more items</a></span>
+	<span id="loading" ng-show="content.paginate_has_more()" scrolling ><a>Loading more items</a></span>
 </div>

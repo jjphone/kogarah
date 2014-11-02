@@ -1,4 +1,4 @@
-app = angular.module("app", [ 'ngCookies', 'ngRoute', 'ngAnimate', 'ng-rails-csrf'] )
+app = angular.module("app", [ 'ngCookies', 'ngRoute', 'ngAnimate', 'ng-rails-csrf', 'ngSanitize' ] )
 app.siteUrl = "http://kogarah.localhost/"
 app.siteTitle = "Trainbuddy"
 
@@ -13,8 +13,6 @@ app.filter('capitalize', () ->
 	return (input, scope) ->
 		input.charAt(0).toUpperCase() + input.substring(1).toLowerCase() if input?
 )
-
-
 
 app.config(["$routeProvider", '$locationProvider', ($routeProvider, $locationProvider) -> 
 
@@ -73,18 +71,16 @@ app.config(["$routeProvider", '$locationProvider', ($routeProvider, $locationPro
 		resolve: { load: loadView },
 		controller: "pageCtrl", controllerAs: "pages"	
 	})
-
-	
-	
-
 ])
 
 app.run(["$rootScope", "$route", "$location", ($rootScope, $route, $location) -> 
 	$rootScope.$on '$includeContentLoaded', ()->
 		$(document).foundation()
+		console.log "------ event( $includeContentLoaded )"
 		
 	$rootScope.$on '$viewContentLoaded', ()->
 		$(document).foundation()
+		console.log "------ event( $viewContentLoaded )"
 	###
 	$rootScope.$on '$locationChangeSuccess', ()->
 		console.log "------ event( locationChangeSuccess )"
@@ -220,7 +216,6 @@ contentCtrl = app.controller("contentCtrl", ["Jsonp", "$scope", "$rootScope", "$
 	content.menu = () ->
 		if content.j.vs.view.current_user then content.j.vs.pages.menu_user else content.j.vs.pages.menu_signin
 
-
 	content.topbarLinks = (dest) ->
 		dest = "signin" unless content.j.vs.view.current_user
 		switch dest
@@ -309,6 +304,24 @@ contentCtrl = app.controller("contentCtrl", ["Jsonp", "$scope", "$rootScope", "$
 			else
 				content.paginate_load(page)
 
+	content.paginate_empty = (type) ->
+		console.log("-----paginate_empty("+type+") :: view.data = ", content.j.vs.view.data)
+		if content.j.vs.view.data? \
+		&& content.j.vs.view.data.paginate? \
+		&& content.j.vs.view.data.paginate.pack? \ 
+		&& content.j.vs.view.data.paginate.pack.length > 0
+			if type? and type.length > 0
+				console.log(" ----  :: content.j.vs.view.data.paginate.type = ", content.j.vs.view.data.paginate.type)
+				console.log(" ----  :: (" +type+ ") ->  = ", content.j.vs.view.data.paginate.type != type)
+
+				content.j.vs.view.data.paginate.type != type
+			else
+				false
+		else
+			true
+
+	content.paginate_has_more = () ->
+		content.j.vs.view.data.paginate.page < content.j.vs.view.data.paginate.total
 
 	content.alertBox = (message) ->
 		alert message
@@ -323,8 +336,14 @@ contentCtrl = app.controller("contentCtrl", ["Jsonp", "$scope", "$rootScope", "$
 		$location.skipReload($route.current).url("/somelink?status=test&page=4").replace()
 		false
 
-	content.demo = () ->
-		console.log "demo"
+	content.send = (event, config) ->
+		event.preventDefault()
+		content.j.http(config)
+
+	content.formAddToken = (data) ->
+		data.utf8 =  String.fromCharCode(0x2713);  # '&#x2713;'
+		data.authenticity_token = content.j.vs.token
+		data
 
 	$scope.content = content
 	return content
@@ -350,12 +369,11 @@ usersCtrl = app.controller("usersCtrl", ["Jsonp", "$scope", "$rootScope", "$loca
 
 	
 	users.submitForm = (url, form, method, event) ->
+		event.preventDefault()
 		if form.$invalid
 			users.formChecked = true
-			event.preventDefault()
 			false
 		else
-			event.preventDefault()
 			u = users.j.vs.view.data.main.pack
 			fd = new FormData()
 			fd.append("user[id]", u.id)
@@ -406,25 +424,93 @@ usersCtrl = app.controller("usersCtrl", ["Jsonp", "$scope", "$rootScope", "$loca
 ])
 
 
-sessionsCtrl = app.controller("sessionsCtrl", ["Jsonp", (Jsonp) ->
+sessionsCtrl = app.controller("sessionsCtrl", () ->
 	sessions = this
-	sessions.j = Jsonp
 	sessions.data = {}
 	console.log "---- sessionsCtrl.init"
 
-	sessions.submitForm = (url, form, method, event) ->
-		event.preventDefault()
-		config = { method: method, url: url, data: sessions.data }
-		sessions.j.http(config)
 	sessions
-])
+)
 
-searchsCtrl = app.controller("searchsCtrl",["Jsonp", (Jsonp) -> 
-])
+searchCtrl = app.controller("searchCtrl", () -> 
+	search = this
+	console.log "--------- search init"
 
-chatsCtrl = app.controller("chatsCtrl", ["Jsonp", (Jsonp) -> 
+	search
+)
+
+chatsCtrl = app.controller("chatsCtrl", ["Jsonp", "$q",  (Jsonp, $q) -> 
 	chats = this
 	chats.j = Jsonp
+
+	chats.userLookup = () ->
+		if chats.j.vs.view.data.main.talkers? && chats.j.vs.view.data.main.talkers.length > 0
+			params = {callback: "JSON_CALLBACK", type: 'tag', term: chats.j.vs.view.data.main.talkers, avoid: chats.ids_to_s(chats.j.vs.view.data.main.ids).toString() }
+			config = { method: 'jsonp', url: '/search', params: params }
+			# calls jsonp.connects instead jsonp.requset, do not trigger page reload
+			q = $q.defer()
+			chats.j.connects(q, config).then( (res) ->
+				if res.data.data? && res.data.data.main.type =="search"
+					chats.j.vs.view.data.main.type = "search"
+					chats.j.vs.view.data.main.pack = res.data.data.main.pack
+					#console.log("chats.userLookup : data.main = ", chats.j.vs.view.data.main)
+			, (res) ->
+				q.reject("Error: /search.jsonp error")
+			)
+		else
+			chats.clearLookup()
+
+	chats.mark = (loc, type, display, pos) ->
+		type = parseInt(type)
+		if ( (loc == 1 && type != 3) || (loc == 3 && type == 3))
+			len = chats.j.vs.view.data.main.talkers.length
+			pos = parseInt(pos)
+			ends = pos + len
+			display.slice(0,pos) + "<b>"+ display.slice(pos, ends) + "</b>" +display.slice(ends, display.length) 
+		else
+			display
+
+	chats.addUser = (user) ->
+		chats.j.vs.view.data.main.type = null
+		console.log("----- chats.addUser user : ", user)
+		if chats.j.vs.view.data.main.ids? && chats.j.vs.view.data.main.ids.length > 0
+			chats.j.vs.view.data.main.ids.push( {id: user.id, tag: user.tag} )
+			chats.clearLookup()
+		else
+			chats.j.vs.view.data.main.ids =[ {id: user.id, tag: user.tag} ]
+
+		chats.j.vs.view.data.main.talkers = null
+		console.log(" ------ addUser --- end  ids = ", chats.j.vs.view.data.main.ids)
+
+	chats.removeUser = (index) ->
+		console.log("removeUser("+index+")")
+		if chats.j.vs.view.data.main.ids? && chats.j.vs.view.data.main.ids.length > index
+			chats.j.vs.view.data.main.ids.splice(index,1)
+		
+	
+	chats.ids_to_s	= (list) ->
+		if list?
+			res = (user.id for user in list) 
+		else
+			[]
+
+	chats.sendMsg = (url, form, method, event) ->
+		event.preventDefault()
+		if form.$invalid
+			chats.j.vs.view.flash = {error: "Error in message"}
+			false
+		else
+			data = {content: chats.j.vs.view.data.main.message }
+			data.to = chats.ids_to_s(chats.j.vs.view.data.main.ids)
+			data.utf8 =  String.fromCharCode(0x2713);  # '&#x2713;'
+			data.authenticity_token = chats.j.vs.token
+			config = {url: url, method: method, data: data}
+			chats.j.http(config)
+
+
+	chats.clearLookup = () ->
+		chats.j.vs.view.data.main.type = null
+
 	console.log "------- Chats init"
 
 	chats
@@ -463,7 +549,6 @@ postsCtrl = app.controller("postsCtrl", ["Jsonp", (Jsonp) ->
 app.directive "upload", ["$parse", "ViewService", ($parse, ViewService) ->
 	restrict: "A",
 	link: (scope, elem, attrs) ->
-		# elem.bind("change", () -> 
 		elem.on("change", () -> 
 			$parse(attrs.upload).assign(ViewService.view.data, elem[0].files )
 			scope.$apply
@@ -482,17 +567,6 @@ app.directive "scrolling", [ "$window", ($window) ->
 				scope.content.paginate_page(scope.content.j.vs.view.data.paginate.page+1 )
 				scope.$apply()
 ]
-
-app.directive "ngMethod", ["Jsonp", (Jsonp) ->
-	restrict: "A"
-	link: (scope, elem, attrs, event) ->
-		elem.on "click", ( event) ->
-			event.preventDefault()
-			config = {method: attrs.ngMethod, url: attrs.href}
-			config.headers = {'Content-Type': 'application/json;charset=utf-8'} if attrs.ngMethod == 'patch'
-			Jsonp.http(config)
-]
-
 
 app.directive "stations", () ->
 	(scope, elem, attrs, event) ->

@@ -1,5 +1,5 @@
 class User < ActiveRecord::Base
-	
+	include Sqlquery
 	has_many :posts, 			dependent: :destroy
 	has_many :relationships, 	dependent: :destroy, foreign_key: "user_id"
 	has_many :ties, dependent: :destroy, class_name: "Relationship", foreign_key: "friend_id"
@@ -114,13 +114,20 @@ class User < ActiveRecord::Base
 			relation = nil
 		end		
 		ids = User.find_by_sql([sql, user_id.to_i, term, phone, email, relation ]).map(&:id)
-		User.where("id in (?)", ids);
+		if ids.size && ids.size>0
+			User.where("id in (?)", ids);
+		else
+			nil
+		end
 	end
 
-	def search_shortcode(term)
-		blocked = relationships.where(status: -1).pluck(:friend_id).push(self.id).join(",")
-		sql = "select * from search_user_code(?, ?, ?, 10)"
-		User.find_by_sql([sql, self.id, term, blocked])
+	#search_user_tag( "term", "1,2,3")
+	def search_user_tag(term, avoid)
+		exclude = relationships.where(status: -1).pluck(:friend_id) + avoid.split(",")+[self.id]
+
+		sql = "select id, name, tag, type, pos from search_user_tag(?, ?, ?, 10)"
+		res = run_sql([sql, self.id, term, exclude.join(',') ])
+		res.map(&:symbolize_keys)
 	end
 
 

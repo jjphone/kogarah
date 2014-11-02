@@ -70,6 +70,13 @@ div.submit-buttons {
 	>div>ul>li>button[type=reset] { @extend .secondary;}
 }
 
+
+
+
+hr.submit.narrow {
+	margin: 10px 0 5px;
+}
+
 div.fields_errors>div {
 	margin-bottom:1em;
 	>h5 { text-transform:capitalize; color: red; margin-bottom: 5px;}

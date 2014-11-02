@@ -113,7 +113,7 @@ $login-color:	#c3f;		$login-color-h:	#c0c;
 
 body {	padding-top: 45px; padding-bottom:50px; background: #eee; }
 
-%masonry  { @extend yellow;
+%masonry  { //@extend yellow;
  	@extend .row; 
 	background: #fffaf0; color: #888; 
 	padding: 0 1rem; 
@@ -175,7 +175,7 @@ body {	padding-top: 45px; padding-bottom:50px; background: #eee; }
 	@extend %masonry;
 	>div {	
 		@extend .large-6; @extend .small-12; 
-		@include cell-color (#eff, #333, #999, transparent 65%, transparent 70% );		
+		@include cell-color (#eff, #333, #999, transparent 65%, transparent 75% );		
 	}
 	>div>div.slide { width: 50%;  }
 
@@ -265,8 +265,8 @@ body {	padding-top: 45px; padding-bottom:50px; background: #eee; }
 	.main>div:not(.more).small-6:not(:nth-child(4n))	{	>div>div.draw {	@include arrow-to(right) }	}
 	.main>div.more.small-6:not(:nth-child(4n))		{	>div>div.draw {	@include arrow-to(left)  }	}
 
-	.main>div.small-6:nth-child(4n) { @extend .red;
-		background: blue;
+	.main>div.small-6:nth-child(4n) { //@extend .red;
+		background: Aquamarine;
 		//>div:first-child { @extend .red;}
 		>div>div.slide.ng-animate, >div.slide.show, >div.slide.show-remove {
 			margin-left: -100%; border-right: 1px solid #888; border-left: 3px solid #555;
@@ -290,7 +290,7 @@ body {	padding-top: 45px; padding-bottom:50px; background: #eee; }
 	}
 
 	.top-row>div.large-6:nth-child(2n) {
-		background: red;
+		background: BlueViolet;
 		>div>div.slide.ng-animate, >div.slide.show, >div.slide.show-remove { margin-left: -50% !important; }
 		>div>div.draw { left: 0; }
 		>div.slide.ng-animate.show-add, >div.slide.show.ng-enter { @include fade-effect(inRight); }
