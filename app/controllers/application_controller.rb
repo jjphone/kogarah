@@ -6,8 +6,6 @@ class ApplicationController < ActionController::Base
 	#protect_from_forgery with: :null_session
 	include SessionsHelper
 	
-
-
 	def redirect_format(url, message, callback)
 		respond_to do |format|
 			format.json {
@@ -50,15 +48,10 @@ class ApplicationController < ActionController::Base
 		link.to_s
 	end
 
-
-
-
 	def angular_callback(query)
 		callback = query[/callback=angular\.callbacks._\d+/]
 		return callback ? callback[/\d+/].to_i : nil
 	end
-
-
 
 	def redirect_back_or(default, message)
 		link = session[:return_to] || default
@@ -102,6 +95,19 @@ class ApplicationController < ActionController::Base
 				render '/layouts/default' 
 			}
 		end
+	end
+
+	# return array of menu links
+	def get_links(group, key, main_id)
+		items = Menu.where(group: group, key: key).includes(:link)
+		links = items.map{ |m|
+			url = m.link.url 
+			if m.link.substitue
+				url.gsub!('##current_user_id##',current_user.id.to_s) if m.link.substitue > 1 # 2, 3
+				url.gsub!('##main_id##',main_id.to_s) if m.link.substitue%2 == 1 # 1,3
+			end
+			{name: m.link.display, url: url, method: m.link.method}
+		}
 	end
 
 

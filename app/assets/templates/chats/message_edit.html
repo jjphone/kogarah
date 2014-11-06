@@ -30,14 +30,14 @@
 		<div> 
 			<ul >
 				<li ng-repeat="user in chats.j.vs.view.data.main.ids" ng-click="chats.removeUser($index)">
-					{{$index}}: {{user.tag}}<a>x</a>
+					{{user.tag}}<a>x</a>
 				</li>
 			</ul>
 		</div>
 	</div>
 
 	<div class="row">
-		<div id="msg-content"><textarea id="message" name="message" ng-model="chats.j.vs.view.data.main.message"></textarea></div>
+		<div id="content-input"><textarea id="message" name="message" ng-model="chats.j.vs.view.data.main.message"></textarea></div>
 	</div>
 
 	<div class="row"> <div class="left-11"><hr class="submit narrow" /></div> </div>

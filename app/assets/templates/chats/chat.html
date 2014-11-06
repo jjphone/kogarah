@@ -1,11 +1,18 @@
-<div class="chat" id="paginate_{{chat.id}}">
+<div class="chat" ng-class="{read: chat.extra.read, unread: !chat.extra.read }"  id="paginate_{{chat.id}}">
+
+	<a class="close" title="delete" ng-if="chats.j.vs.view.current_user.id==chat.user" ng-click="chats.deleteChat(chat.id, $event)">x</a>
+
 	<a ng-href="/chats/{{chat.id}}">
 		<div>
-			<div><div>owner_id: {{chat.user}} </div></div>
-			<div><div>display: {{chat.display}} </div></div>
-			<div><div>Last Message: {{chat.extra.message.content}} </div></div>
-			<div><div>Message Extra: {{chat.extra.message.extra}} </div></div>
-			<div><div>read: {{chat.extra.read}} </div></div>
+			<div class="chat-users">
+				<ul><li ng-repeat="tag in chat.display.split(',')">{{tag}}</li></ul>
+			</div>
+			<div><hr class="narrow"></div>
+			<div class="chat-message">
+				<div>{{chat.extra.message.content}}</div>
+				<div ng-bind-html="chat.extra.message.extra"></div>
+			</div>
+			
 		</div>
 	</a>			
 </div><!-- content -->

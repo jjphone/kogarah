@@ -1,5 +1,4 @@
 class SearchController < ApplicationController
-	include UsersHelper
 	before_action :signed_in_user
 
 	def index

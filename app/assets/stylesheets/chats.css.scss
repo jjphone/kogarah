@@ -12,22 +12,26 @@ div.left-11 { @extend .columns; @extend .small-12; @extend .large-11; @extend .e
 }
 
 
+.chat_tag{
+	@extend .label; @extend .tiny; @extend .radius; @extend .secondary;
+	@include transparent-ratio(90); display: inline-block;
+	margin: 0 3px 5px; padding: 3px; color: $set1-prime;
+}
+
 div#toIDs {
 	@extend .rows;
 	>div { @extend .red;
 		@extend .left-11; 
 		>ul { max-height: 3rem; overflow: auto; @extend .zero-v-gap; }
 		>ul>li {
-			@extend .label; @extend .tiny; @extend .radius; @extend .secondary;
-			@include transparent-ratio(90); display: inline-block; 
-			margin: 0 3px 5px; padding: 3px; color: $set1-prime;
+			@extend .chat_tag;
 			cursor: hand;
 		}
 		>ul>li>a{ @extend .close; vertical-align:super; margin: 0 3px 0 5px;}
 	}
 }
 
-div#msg-content {
+div#content-input {
 	@extend .left-11; 
 	>textarea{ @extend .zero-v-gap; resize: none; height:60px; }
 }
@@ -68,4 +72,34 @@ ul.autocomplete
 		b { color: $set1-dark-B;  }
 	}
 	>li.none { color: #888;  }
+}
+
+
+
+div.chat-users{
+	max-height: 84px;
+	>ul {	margin: 0 0 5px;
+		>li {@extend .chat_tag;}
+	}	
+}
+div.chat-message{
+	max-height: 200px; overflow: auto;
+	>div{ margin:5px 2px;}
+}
+
+div.chat.unread {
+	@include transparent-ratio(75);
+	div.chat-message{ 
+		background: #eee;
+		div:first-child{ color: #333;}
+	}
+}
+
+div.chat.read{
+	//@extend .blue;
+}
+
+div.chat>a.close{
+	position: absolute;	z-index: 1; 
+	right: 10px; top: 0;
 }

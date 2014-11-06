@@ -2,6 +2,7 @@ namespace :db do
 	
 	desc "fill database with dummy data"
 	task populate: :environment do
+
 		password = "123456"
 		User.create!( 	name: "root user",
 						email: "r@u.com",
@@ -19,7 +20,10 @@ namespace :db do
 		make_relations(5,4, -1, false, 0, 23) # 1 way block
 
 		make_relations(3,3, -1, true, 0, 30) # 2way  block
-		#make_relations(3,3, -1, false, 30, 0) #block		
+		#make_relations(3,3, -1, false, 30, 0) #block	
+		make_chats(1, 5, 5)	
+
+
 	end
 
 	def make_users(n)
@@ -55,5 +59,12 @@ namespace :db do
 		}
 	end
 
-
+	def make_chats(beg_id, end_id, counts)
+		ids = (beg_id..end_id).to_a
+		counts.times do 
+			sender = ids.shift
+			Chat.create_new(sender, ids.join(","), Faker::Lorem.sentence(5), nil)	
+			ids.push( ids.last + 1 )
+		end
+	end
 end

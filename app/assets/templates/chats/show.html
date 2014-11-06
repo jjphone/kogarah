@@ -1,4 +1,4 @@
-<!-- view.data.main = {type: 'search', pack: {talkers, ids, result: [], term, type: 'user'} }  -->
+<!-- view.data.main = {type: 'search',  }  -->
 
 
 <div class="top-row" ng-controller="chatsCtrl as chats">
@@ -11,7 +11,16 @@
 
 
 	<div>
-		<div ng-include src="'/assets/layouts/menu.html'"></div>
+		<div> 
+			view.data: {{content.j.vs.view.data}}
+			<div class="draw" details="show" title="more"><i></i></div>
+		</div>
+
+		<div class="slide">
+			<div>This is #details=show#</div>
+			<div class="bg"></div>
+		</div> <!-- slide info -->
+
 		<div></div> <!-- background-->
 	</div> <!-- end cell -->
 </div>

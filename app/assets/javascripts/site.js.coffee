@@ -305,15 +305,12 @@ contentCtrl = app.controller("contentCtrl", ["Jsonp", "$scope", "$rootScope", "$
 				content.paginate_load(page)
 
 	content.paginate_empty = (type) ->
-		console.log("-----paginate_empty("+type+") :: view.data = ", content.j.vs.view.data)
+		#console.log("-----paginate_empty("+type+") :: view.data = ", content.j.vs.view.data)
 		if content.j.vs.view.data? \
 		&& content.j.vs.view.data.paginate? \
 		&& content.j.vs.view.data.paginate.pack? \ 
 		&& content.j.vs.view.data.paginate.pack.length > 0
 			if type? and type.length > 0
-				console.log(" ----  :: content.j.vs.view.data.paginate.type = ", content.j.vs.view.data.paginate.type)
-				console.log(" ----  :: (" +type+ ") ->  = ", content.j.vs.view.data.paginate.type != type)
-
 				content.j.vs.view.data.paginate.type != type
 			else
 				false
@@ -507,9 +504,12 @@ chatsCtrl = app.controller("chatsCtrl", ["Jsonp", "$q",  (Jsonp, $q) ->
 			config = {url: url, method: method, data: data}
 			chats.j.http(config)
 
-
 	chats.clearLookup = () ->
 		chats.j.vs.view.data.main.type = null
+
+	chats.deleteChat = (id, event) ->
+		event.preventDefault()
+		console.log("chats.deleteChat("+id+")")
 
 	console.log "------- Chats init"
 
@@ -607,6 +607,18 @@ app.directive "details", ($animate, $compile) ->
 						cell.removeClass("more")
 					) 
 			scope.$digest()
+
+
+app.directive "ngMethod", ["Jsonp", (Jsonp) ->
+	restrict: "A"
+	link: (scope, elem, attrs, event) ->
+		elem.on "click", ( event) ->
+			event.preventDefault()
+			config = {method: attrs.ngMethod, url: attrs.href}
+			config.headers = {'Content-Type': 'application/json;charset=utf-8'} if attrs.ngMethod == 'patch'
+			Jsonp.http(config)
+]
+
 
 createNode = () ->
 	html="<div class='slide show'> <div>Action : #details=Add#  Added Slide</div> <div class='bg'></div> </div>"

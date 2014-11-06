@@ -10,14 +10,15 @@ class Chat < ActiveRecord::Base
 	# returns the talker for the sender if message created
 	def self.create_new(sender_id, talkers_str, content, extra)
 		sender = User.find_by( {id: sender_id} )
-		blocked = Relationship.where("status = -1 and friend_id = ?", sender.id).map(&:user_id)
+		blocked = Relationship.where("status = -1 and friend_id = ?", sender.id).map(&:user_id).push(sender.id)
+
 		ids = talkers_str.split(",").map(&:to_i) - blocked
-		if ids.empty?
+		talkers = User.where("id in (?)", ids) unless ids.empty?
+		if talkers.empty?
 			nil
 		else
 			c = Chat.create( user_id: sender.id )
 			m = Message.create(user_id: sender.id, chat_id: c.id, content: content, extra: extra)
-			talkers = User.where("id in (?)", ids)
 			talkers.each{ |u|
 				t = Talker.create(user_id: u.id, chat_id: c.id)
 			}	
@@ -39,16 +40,11 @@ class Chat < ActiveRecord::Base
 	end
 
 	def self.display_names(sender, talkers)
-		case talkers.size
-		when 1
-			"@#{sender} and @#{talkers[0].login}"
-		when 2
-			"@#{sender}, @#{talkers[0].login} and @#{talkers[1].login}"
-		else
-			"@#{sender}, @#{talkers[0].login}, @#{talkers[1].login} and #{talkers.size - 2} others"
-		end
+		list = talkers.map{ |t|
+			"@" + t.login
+		}.unshift("@#{sender}")
+		list.join(',')
 	end
-
 
 	def self.ids_with_user(user)
 		sql = "select c.* from chats c, talkers t where t.user_id = #{user.to_i} and c.id = t.chat_id"
